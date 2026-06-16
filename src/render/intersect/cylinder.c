@@ -10,14 +10,14 @@ uint8_t	ray_intersect_cylinder(t_ray ray, t_objs *obj, float *t)
 	t_cyl	cy;
 	uint8_t	hit_type;
 
-	cy.ca = vnorm(obj->cylinder.orientation);
+	cy.ca = vnorm(obj->u.cylinder.orientation);
 	cy.oc = vsub(ray.origin, obj->coords);
 	cy.rd = vsub(ray.vec, vscale(cy.ca, vdot(ray.vec, cy.ca)));
 	cy.oc_proj = vsub(cy.oc, vscale(cy.ca, vdot(cy.oc, cy.ca)));
-	cy.half_height = obj->cylinder.height / 2.0F;
+	cy.half_height = obj->u.cylinder.height / 2.0F;
 	cy.valid_t = -1.0F;
 	if (!solve_quadratic(vdot(cy.rd, cy.rd), 2.0F * vdot(cy.rd, cy.oc_proj), \
-		vdot(cy.oc_proj, cy.oc_proj) - obj->cylinder.radius * obj->cylinder.radius, &cy))
+		vdot(cy.oc_proj, cy.oc_proj) - obj->u.cylinder.radius * obj->u.cylinder.radius, &cy))
 		return (CYL_NONE);
 	if (cy.t[1] < 0.0F)
 		return (CYL_NONE);

@@ -36,7 +36,7 @@ uint8_t	check_cyl_caps(t_cyl *cy, t_ray ray, t_objs *obj, uint8_t hit_type)
 
 	cycap.top_cap = vadd(obj->coords, vscale(cy->ca, cy->half_height));
 	cycap.bottom_cap = vsub(obj->coords, vscale(cy->ca, cy->half_height));
-	cycap.cap_radius = obj->cylinder.radius;
+	cycap.cap_radius = obj->u.cylinder.radius;
 	cap_hit = get_cap_intersection(&cycap, ray, cy->ca, CYL_TOP);
 	if (cap_hit != CYL_NONE && (cy->valid_t < 0.0F || cycap.t_cap < cy->valid_t))
 	{

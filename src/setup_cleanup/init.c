@@ -54,8 +54,8 @@ int16_t	setup_init_parsing(t_rt *rt, const int argc, const char *argv)
 		cleanup(rt);
 		return (perr("MLX", errset(ERTRN)));
 	}
-	rt->win->target_time += (float)((rt->scene->l_arr_size * 1.5F) + \
-		rt->scene->o_arr_size) * 0.001F;
+	rt->win->target_time += (float)((rt->scene->l.l_arr_size * 1.5F) + \
+		rt->scene->o.o_arr_size) * 0.001F;
 	rt->win->target_time = clamp(rt->win->target_time, 0.01F, 0.025F);
 	return (EXIT_SUCCESS);
 }

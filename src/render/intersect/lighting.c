@@ -12,13 +12,13 @@ t_objs	*render_light(t_scene *sc, t_ray ray, float *closest_t, t_objs *closest_o
 	float		t;
 
 	i = 0;
-	while (i < sc->l_arr_size)
+	while (i < sc->l.l_arr_size)
 	{
-		if (sc->lights[i].l.visible == true || sc->lights[i].l.intersect_lights == true)
+		if (sc->l.lights[i].u.l.visible == true || sc->l.lights[i].u.l.intersect_lights == true)
 		{
-			if (ray_intersect_light(ray, &sc->lights[i], &t) && t < *closest_t)
+			if (ray_intersect_light(ray, &sc->l.lights[i], &t) && t < *closest_t)
 			{
-				closest_obj = sc->lights + i;
+				closest_obj = sc->l.lights + i;
 				*closest_t = t;
 			}
 		}
@@ -35,11 +35,11 @@ t_vec4	calc_lighting(t_scene *sc, t_vec4 point, t_vec4 normal, t_vec4 obj_color)
 	float			diff;
 	uint32_t		i;
 
-	result = obj_color * sc->ambient.color * bcast3(sc->ambient.a.ratio);
+	result = obj_color * sc->ambient.color * bcast3(sc->ambient.u.a.ratio);
 	i = 0;
-	while (i < sc->l_arr_size)
+	while (i < sc->l.l_arr_size)
 	{
-		light_dir = vnorm(vsub(sc->lights[i].coords, point));
+		light_dir = vnorm(vsub(sc->l.lights[i].coords, point));
 		if (sc->soft_shadows == false || sc->shadow_grsize < 2)
 		{
 			if (calc_hard_shadow(sc, (t_ray){point, normal}, light_dir, i))
@@ -48,9 +48,9 @@ t_vec4	calc_lighting(t_scene *sc, t_vec4 point, t_vec4 normal, t_vec4 obj_color)
 				shadow = 1.0F;
 		}
 		else
-			shadow = calc_soft_shadow_circle(sc, (t_ray){point, normal}, sc->lights[i].coords, i, sc->shadow_grsize);
-		diff = clamp(vdot(normal, light_dir), 0.0F, 1.0F) * sc->lights[i].l.brightness;
-		result += (obj_color * sc->lights[i].color * bcast3(diff * shadow));
+			shadow = calc_soft_shadow_circle(sc, (t_ray){point, normal}, sc->l.lights[i].coords, i, sc->shadow_grsize);
+		diff = clamp(vdot(normal, light_dir), 0.0F, 1.0F) * sc->l.lights[i].u.l.brightness;
+		result += (obj_color * sc->l.lights[i].color * bcast3(diff * shadow));
 		++i;
 	}
 	return (vec_clamp(result, 0.0F, 1.0F));
@@ -66,12 +66,12 @@ static bool	calc_hard_shadow(t_scene *sc, t_ray ray, t_vec4 light_dir, uint32_t 
 	i = 0;
 	t = 0.0F;
 	origin = vadd(ray.origin, vscale(light_dir, SHADOW_EPSILON));
-	distance = vlen(vsub(sc->lights[light].coords, ray.origin));
+	distance = vlen(vsub(sc->l.lights[light].coords, ray.origin));
 	if (vdot(ray.vec, light_dir) < 0.0F)
 		return (true);
-	while (i < sc->o_arr_size)
+	while (i < sc->o.o_arr_size)
 	{
-		if (ray_intersect_table((t_ray){origin, light_dir}, &sc->objs[i], &t)
+		if (ray_intersect_table((t_ray){origin, light_dir}, &sc->o.objs[i], &t)
 			&& t > SHADOW_EPSILON && t < distance)
 			return (true);
 		++i;
@@ -96,9 +96,9 @@ bool	is_occluded(t_scene *sc, t_vec4 origin, t_vec4 dir, float max_dist)
 	uint16_t	j;
 
 	j = 0;
-	while (j < sc->o_arr_size)
+	while (j < sc->o.o_arr_size)
 	{
-		if (ray_intersect_table(ray, &sc->objs[j], &t)
+		if (ray_intersect_table(ray, &sc->o.objs[j], &t)
 			&& t > SHADOW_EPSILON && t < max_dist)
 			return true;
 		++j;
@@ -119,7 +119,7 @@ static float	calc_soft_shadow_circle(t_scene *sc, t_ray ray, t_vec4 light_pos, u
 	t_vec4		tangent, bitangent, sample_dir;
 	float		distance, angle, vis;
 	uint8_t		i;
-	const float	radius = sc->lights[light].l.radius;
+	const float	radius = sc->l.lights[light].u.l.radius;
 
 	light_dir = vnorm(vsub(light_pos, ray.origin));
 	tangent = vnorm(vcross(light_dir, ray.vec));
@@ -148,8 +148,6 @@ static float	calc_soft_shadow_circle(t_scene *sc, t_ray ray, t_vec4 light_pos, u
 	// 	printf("dist: %.3f, vis; %.3f\n", distance, vis);
 	float softness = clamp((distance - radius) / (radius * 0.1F), 0.0F, 1.0F);
 	return lerp(vis / (float)sample_count, 1.0F, softness);
-
-
 }
 
 
@@ -200,7 +198,7 @@ static float	calc_soft_shadow_circle(t_scene *sc, t_ray ray, t_vec4 light_pos, u
 // {
 // 	uint16_t		hit_count;
 // 	uint16_t		i;
-// 	const float		radius = sc->lights[light].l.radius;
+// 	const float		radius = sc->l.lights[light].l.radius;
 // 	const float		angle = 3.14159F * (light * 0.618F);
 // 	const float		distance = vlen(vsub(light_pos, ray.origin));
 // 	const uint16_t	total_samples = sc->shadow_grsize * sc->shadow_grsize;

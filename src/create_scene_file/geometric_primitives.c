@@ -29,7 +29,7 @@ static void	plane_line(t_objs *pl, t_dbltoa *dbl, int fd)
 
 	line_index = cpy_str0(rt_line, "pl\t");
 	line_index += coords_line(dbl, rt_line + line_index, pl->coords);
-	line_index += coords_line(dbl, rt_line + line_index, pl->plane.orientation);
+	line_index += coords_line(dbl, rt_line + line_index, pl->u.plane.orientation);
 	line_index += color_line(dbl, rt_line + line_index, pl->color);
 	ft_putendl_fd(rt_line, fd);
 }
@@ -41,7 +41,7 @@ static void	sphere_line(t_objs *sp, t_dbltoa *dbl, int fd)
 
 	line_index = cpy_str0(rt_line, "sp\t");
 	line_index += coords_line(dbl, rt_line + line_index, sp->coords);
-	dbl->value = sp->sphere.radius * 2;
+	dbl->value = sp->u.sphere.radius * 2;
 	dbltoa_buff_prec(*dbl);
 	line_index += cpy_str0(rt_line + line_index, dbl->buff);
 	line_index += cpy_str0(rt_line + line_index, "\t\t");
@@ -56,12 +56,12 @@ static void	cylinder_line(t_objs *cy, t_dbltoa *dbl, int fd)
 
 	line_index = cpy_str0(rt_line, "cy\t");
 	line_index += coords_line(dbl, rt_line + line_index, cy->coords);
-	line_index += coords_line(dbl, rt_line + line_index, cy->cylinder.orientation);
-	dbl->value = cy->cylinder.radius * 2;
+	line_index += coords_line(dbl, rt_line + line_index, cy->u.cylinder.orientation);
+	dbl->value = cy->u.cylinder.radius * 2;
 	dbltoa_buff_prec(*dbl);
 	line_index += cpy_str0(rt_line + line_index, dbl->buff);
 	line_index += cpy_str0(rt_line + line_index, "\t\t");
-	dbl->value = cy->cylinder.height;
+	dbl->value = cy->u.cylinder.height;
 	dbltoa_buff_prec(*dbl);
 	line_index += cpy_str0(rt_line + line_index, dbl->buff);
 	line_index += cpy_str0(rt_line + line_index, "\t\t");

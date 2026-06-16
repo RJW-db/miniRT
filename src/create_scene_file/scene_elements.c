@@ -6,7 +6,7 @@ void	ambient_line(t_objs *ambient, t_dbltoa *dbl, int fd)
 	size_t	line_index;
 
 	line_index = cpy_str0(rt_line, "A\t");
-	dbl->value = ambient->a.ratio;
+	dbl->value = ambient->u.a.ratio;
 	dbltoa_buff_prec(*dbl);
 	line_index += cpy_str0(rt_line + line_index, dbl->buff);
 	line_index += cpy_str0(rt_line + line_index, "\t\t");
@@ -21,8 +21,8 @@ void	camera_line(t_objs *camera, t_dbltoa *dbl, int fd)
 
 	line_index = cpy_str0(rt_line, "C\t");
 	line_index += coords_line(dbl, rt_line + line_index, camera->coords);
-	line_index += coords_line(dbl, rt_line + line_index, camera->c.orientation);
-	dbl->value = camera->c.fov;
+	line_index += coords_line(dbl, rt_line + line_index, camera->u.c.orientation);
+	dbl->value = camera->u.c.fov;
 	dbl->precision = 0;
 	dbltoa_buff_prec(*dbl);
 	cpy_str0(rt_line + line_index, dbl->buff);
@@ -40,15 +40,15 @@ void	lights_line(t_objs *lights, size_t amount, t_dbltoa *dbl, int fd)
 	{
 		line_index = cpy_str0(rt_line, "L\t");
 		line_index += coords_line(dbl, rt_line + line_index, lights[i].coords);
-		dbl->value = lights[i].l.brightness;
+		dbl->value = lights[i].u.l.brightness;
 		dbl->precision = 1;
 		dbltoa_buff_prec(*dbl);
 		line_index += cpy_str0(rt_line + line_index, dbl->buff);
 		line_index += cpy_str0(rt_line + line_index, "\t\t");
 		line_index += color_line(dbl, rt_line + line_index, lights[i].color);
-		if (lights[i].l.visible == true)
+		if (lights[i].u.l.visible == true)
 		{
-			dbl->value = lights[i].l.radius;
+			dbl->value = lights[i].u.l.radius;
 			dbltoa_buff_prec(*dbl);
 			line_index += cpy_srcs(rt_line + line_index, "\t\t", dbl->buff, "\t\t");
 			line_index += color_line(dbl, rt_line + line_index, lights[i].color);

@@ -49,29 +49,29 @@ void	brightness_keys(mlx_key_data_t keydata, t_rt *rt)
 {
 	float		upl;
 	float		dol;
-	const float	upa = rt->scene->ambient.a.ratio + 0.05F;
-	const float	doa = rt->scene->ambient.a.ratio - 0.05F;
+	const float	upa = rt->scene->ambient.u.a.ratio + 0.05F;
+	const float	doa = rt->scene->ambient.u.a.ratio - 0.05F;
 
 	if (keydata.key == MLX_KEY_EQUAL)
 	{
 		if (rt->scene->selected_obj != NULL && rt->scene->selected_obj->type == LIGHT)
 		{
-			upl = rt->scene->selected_obj->l.brightness + 0.05F;
-			rt->scene->selected_obj->l.brightness = clamp(upl, 0.0F, 1.0F);
+			upl = rt->scene->selected_obj->u.l.brightness + 0.05F;
+			rt->scene->selected_obj->u.l.brightness = clamp(upl, 0.0F, 1.0F);
 		}
 		else
-			rt->scene->ambient.a.ratio = clamp(upa, 0.0F, 1.0F);
+			rt->scene->ambient.u.a.ratio = clamp(upa, 0.0F, 1.0F);
 		rt->scene->render = true;
 	}
 	else if (keydata.key == MLX_KEY_MINUS)
 	{
 		if (rt->scene->selected_obj != NULL && rt->scene->selected_obj->type == LIGHT)
 		{
-			dol = rt->scene->selected_obj->l.brightness - 0.05F;
-			rt->scene->selected_obj->l.brightness = clamp(dol, 0.0F, 1.0F);
+			dol = rt->scene->selected_obj->u.l.brightness - 0.05F;
+			rt->scene->selected_obj->u.l.brightness = clamp(dol, 0.0F, 1.0F);
 		}
 		else
-			rt->scene->ambient.a.ratio = clamp(doa, 0.0F, 1.0F);
+			rt->scene->ambient.u.a.ratio = clamp(doa, 0.0F, 1.0F);
 		rt->scene->render = true;
 	}
 }
@@ -85,11 +85,11 @@ static void	scene_manipulate_keys(mlx_key_data_t keydata, t_rt *rt)
 		rt->scene->render = true;
 	else if (keydata.key == MLX_KEY_L)
 	{
-		light = rt->scene->lights;
+		light = rt->scene->l.lights;
 		index = 0;
-		while (index < rt->scene->l_arr_size)
+		while (index < rt->scene->l.l_arr_size)
 		{
-			light[index].l.intersect_lights = !light[index].l.intersect_lights;
+			light[index].u.l.intersect_lights = !light[index].u.l.intersect_lights;
 			++index;
 		}
 		rt->scene->render = true;

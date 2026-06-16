@@ -36,17 +36,17 @@ static void	select_obj_left(t_scene *sc)
 	ssize_t	index;
 
 	index = sc->sel_obj_index - 1;
-	while (index >= 0 && sc->objs[index].type == PLANE)
+	while (index >= 0 && sc->o.objs[index].type == PLANE)
 		--index;
 	if (index < 0)
 	{
-		index = sc->o_arr_size - 1;
-		while (index >= 0 && sc->objs[index].type == PLANE)
+		index = sc->o.o_arr_size - 1;
+		while (index >= 0 && sc->o.objs[index].type == PLANE)
 			--index;
 		if (index < 0)
 			return ;
 	}
-	sc->selected_obj = sc->objs + index;
+	sc->selected_obj = sc->o.objs + index;
 	sc->sel_obj_index = index;
 }
 
@@ -55,17 +55,17 @@ static void	select_obj_right(t_scene *sc)
 	ssize_t	index;
 
 	index = sc->sel_obj_index + 1;
-	while (index < (ssize_t)sc->o_arr_size && sc->objs[index].type == PLANE)
+	while (index < (ssize_t)sc->o.o_arr_size && sc->o.objs[index].type == PLANE)
 		++index;
-	if (index >= (ssize_t)sc->o_arr_size)
+	if (index >= (ssize_t)sc->o.o_arr_size)
 	{
 		index = 0;
-		while (index < (ssize_t)sc->o_arr_size && sc->objs[index].type == PLANE)
+		while (index < (ssize_t)sc->o.o_arr_size && sc->o.objs[index].type == PLANE)
 			++index;
-		if (index >= (ssize_t)sc->o_arr_size)
+		if (index >= (ssize_t)sc->o.o_arr_size)
 			return ;
 	}
-	sc->selected_obj = sc->objs + index;
+	sc->selected_obj = sc->o.objs + index;
 	sc->sel_obj_index = index;
 }
 
@@ -74,13 +74,13 @@ static bool	increase_obj(t_objs *selected_obj, bool radius_or_height)
 	if (selected_obj != NULL)
 	{
 		if (selected_obj->type == SPHERE)
-			selected_obj->sphere.radius *= 1.1F;
+			selected_obj->u.sphere.radius *= 1.1F;
 		else if (selected_obj->type == LIGHT)
-			selected_obj->l.radius *= 1.1F;
+			selected_obj->u.l.radius *= 1.1F;
 		else if (radius_or_height == RADIUS)
-			selected_obj->cylinder.radius *= 1.1F;
+			selected_obj->u.cylinder.radius *= 1.1F;
 		else if (radius_or_height == HEIGHT)
-			selected_obj->cylinder.height *= 1.1F;
+			selected_obj->u.cylinder.height *= 1.1F;
 		return (true);
 	}
 	return (false);
@@ -90,13 +90,13 @@ static bool	decrease_obj(t_objs *selected_obj, bool radius_or_height)
 {
 	if (selected_obj == NULL)
 		return (false);
-	if (selected_obj->type == SPHERE && selected_obj->sphere.radius > 0.01F)
-		selected_obj->sphere.radius /= 1.1F;
-	else if (selected_obj->type == LIGHT && selected_obj->sphere.radius > 0.01F)
-		selected_obj->l.radius /= 1.1F;
-	else if (radius_or_height == RADIUS && selected_obj->cylinder.radius > 0.01F)
-		selected_obj->cylinder.radius /= 1.1F;
-	else if (radius_or_height == HEIGHT && selected_obj->cylinder.height > 0.01F)
-		selected_obj->cylinder.height /= 1.1F;
+	if (selected_obj->type == SPHERE && selected_obj->u.sphere.radius > 0.01F)
+		selected_obj->u.sphere.radius /= 1.1F;
+	else if (selected_obj->type == LIGHT && selected_obj->u.sphere.radius > 0.01F)
+		selected_obj->u.l.radius /= 1.1F;
+	else if (radius_or_height == RADIUS && selected_obj->u.cylinder.radius > 0.01F)
+		selected_obj->u.cylinder.radius /= 1.1F;
+	else if (radius_or_height == HEIGHT && selected_obj->u.cylinder.height > 0.01F)
+		selected_obj->u.cylinder.height /= 1.1F;
 	return (true);
 }

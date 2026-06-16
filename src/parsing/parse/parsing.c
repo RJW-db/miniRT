@@ -24,10 +24,10 @@ int16_t	parse_scene_file(const char *file, t_scene *sc)
 		free_dynarrs_on_failure(&vc);
 		return (close(fd), errset(perr("shrink_dynarr", ENOMEM)));
 	}
-	sc->o_arr_size = vc.obj_dynarr.length;
-	sc->l_arr_size = vc.light_dynarr.length;
-	sc->objs = (t_objs *)dynarr_take_arr(&vc.obj_dynarr);
-	sc->lights = (t_objs *)dynarr_take_arr(&vc.light_dynarr);
+	sc->o.o_arr_size = vc.obj_dynarr.length;
+	sc->l.l_arr_size = vc.light_dynarr.length;
+	sc->o.objs = (t_objs *)dynarr_take_arr(&vc.obj_dynarr);
+	sc->l.lights = (t_objs *)dynarr_take_arr(&vc.light_dynarr);
 	close(fd);
 	return (errset(ERTRN));
 }

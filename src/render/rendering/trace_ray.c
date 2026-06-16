@@ -27,9 +27,9 @@ uint32_t	find_closest_object(t_scene *sc, t_ray ray, float *closest_t, uint8_t *
 	i = 0;
 	*closest_t = INFINITY;
 	*closest_intersect_type = 0;
-	while (i < sc->o_arr_size)
+	while (i < sc->o.o_arr_size)
 	{
-		intersect_type = ray_intersect_table(ray, sc->objs + i, &t);
+		intersect_type = ray_intersect_table(ray, sc->o.objs + i, &t);
 		if (intersect_type && t < *closest_t)
 		{
 			closest_obj = i;
@@ -51,16 +51,16 @@ t_vec4	trace_ray(t_scene *sc, t_ray ray)
 	t_vec4	hit_point;
 
 	pixel_color = (t_vec4){0.0F, 0.0F, 0.0F, 1.0F};
-	closest_obj = sc->objs + find_closest_object(sc, ray, &closest_t, &closest_intersect_type);
+	closest_obj = sc->o.objs + find_closest_object(sc, ray, &closest_t, &closest_intersect_type);
 	closest_obj = render_light(sc, ray, &closest_t, closest_obj);
 	if (closest_t < INFINITY && closest_t > 0.0F)
 	{
 		pixel_color = closest_obj->color;
 		if (closest_obj->type == LIGHT)
 		{
-			if (closest_obj->l.visible == false)
+			if (closest_obj->u.l.visible == false)
 				return (pixel_color);
-			return (closest_obj->l.obj_color);
+			return (closest_obj->u.l.obj_color);
 		}
 		hit_point = vadd(ray.origin, vscale(ray.vec, closest_t));
 		return (calc_lighting(sc, hit_point, \
@@ -76,11 +76,11 @@ static t_vec4	calculate_normal(t_objs *obj, t_ray *ray, float t, uint8_t interse
 
 	if (obj->type == PLANE)
 	{
-		if (vdot(obj->plane.orientation, ray->vec) > 0.0F)
+		if (vdot(obj->u.plane.orientation, ray->vec) > 0.0F)
 		{
-			return (vscale(obj->plane.orientation, -1.0F));
+			return (vscale(obj->u.plane.orientation, -1.0F));
 		}
-		return (obj->plane.orientation);
+		return (obj->u.plane.orientation);
 	}
 	normal = (t_vec4){0.0F, 0.0F, 0.0F, 1.0F};
 	if (obj->type == SPHERE)
@@ -105,9 +105,9 @@ static t_vec4	calculate_normal_cylinder(t_objs *obj, t_ray ray, float t, uint8_t
 	{
 		normal = vsub(hit_point, 
 				vadd(obj->coords, 
-				vscale(obj->cylinder.orientation, 
-				vdot(vsub(hit_point, obj->coords), obj->cylinder.orientation))));
+				vscale(obj->u.cylinder.orientation, 
+				vdot(vsub(hit_point, obj->coords), obj->u.cylinder.orientation))));
 		return (vnorm(normal));
 	}
-	return (vnorm(obj->cylinder.orientation));
+	return (vnorm(obj->u.cylinder.orientation));
 }

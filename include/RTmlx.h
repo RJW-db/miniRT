@@ -3,6 +3,7 @@
 # include <MLX42/MLX42.h>
 # include <libftx.h> 
 # include <miniRT.h>
+# include "forward_declarations.h"
 
 # define FILE_CREATION 256	// (NAME_MAX || MAX_PATH) + 1
 # define LOGO_PATH "images/glasses.png"
@@ -13,11 +14,11 @@
 
 # define FOV_MAX 180.0F
 
-typedef struct	s_rt		t_rt;
-typedef struct	s_scene		t_scene;
-typedef struct	s_window	t_window;
+// typedef struct	s_rt		t_rt;
+// typedef struct	s_scene		t_scene;
+// typedef struct	s_window	t_window;
 
-typedef struct s_window
+struct s_window
 {
 	mlx_t			*mlx;
 	mlx_image_t		*img;
@@ -40,7 +41,7 @@ typedef struct s_window
 	uint16_t		filename_len;
 	bool			prt_perf_stats;
 	mlx_texture_t	*logo;
-}	t_window;
+};
 
 // window_setup.c
 

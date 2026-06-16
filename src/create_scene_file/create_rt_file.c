@@ -20,8 +20,8 @@ void	create_scene_rt_file(t_scene *sc, const char *filename)
 	dbl = setup_dbltoa_params(dbltoa_buff);
 	ambient_line(&sc->ambient, &dbl, fd);
 	camera_line(&sc->camera, &dbl, fd);
-	lights_line(sc->lights, sc->l_arr_size, &dbl, fd);
-	objs_line(sc->objs, sc->o_arr_size, &dbl, fd);
+	lights_line(sc->l.lights, sc->l.l_arr_size, &dbl, fd);
+	objs_line(sc->o.objs, sc->o.o_arr_size, &dbl, fd);
 	close(fd);
 }
 

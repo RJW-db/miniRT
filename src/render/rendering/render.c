@@ -11,7 +11,7 @@ void	render(t_rt *rt, t_window *w)
 	t_ray		ray;
 	t_axis2		axis;
 
-	ndc = (t_vec4){0.0F, 0.0F, rt->scene->camera.c.zvp_dist, 0.0F};
+	ndc = (t_vec4){0.0F, 0.0F, rt->scene->camera.u.c.zvp_dist, 0.0F};
 	ray.origin = rt->scene->camera.coords;
 	axis.y = 0;
 	while (axis.y < w->rndr_hght)
@@ -21,7 +21,7 @@ void	render(t_rt *rt, t_window *w)
 		{
 			ndc[X] = (2.0F * ((axis.x + 0.5F) / width) - 1.0F) * w->aspectrat;
 			ndc[Y] = 1.0F - 2.0F * ((axis.y + 0.5F) / height);
-			ray.vec = transform_ray_dir(ndc, rt->scene->camera.c.orientation);
+			ray.vec = transform_ray_dir(ndc, rt->scene->camera.u.c.orientation);
 			scaled_res_set_pixel(w, axis.x, axis.y, trace_ray(rt->scene, ray));
 			++axis.x;
 		}
@@ -37,7 +37,7 @@ void	thread_fast_render(t_thread *th, t_window *w)
 	t_ray		ray;
 	t_axis2		axis;
 
-	ndc = (t_vec4){0.0F, 0.0F, th->scene->camera.c.zvp_dist, 0.0F};
+	ndc = (t_vec4){0.0F, 0.0F, th->scene->camera.u.c.zvp_dist, 0.0F};
 	ray.origin = th->scene->camera.coords;
 	axis.y = 0;
 	while (axis.y < w->rndr_hght)
@@ -47,7 +47,7 @@ void	thread_fast_render(t_thread *th, t_window *w)
 		{
 			ndc[X] = (2.0F * ((axis.x + 0.5F) / width) - 1.0F) * w->aspectrat;
 			ndc[Y] = 1.0F - 2.0F * ((axis.y + 0.5F) / height);
-			ray.vec = transform_ray_dir(ndc, th->scene->camera.c.orientation);
+			ray.vec = transform_ray_dir(ndc, th->scene->camera.u.c.orientation);
 			set_pixel_multi(th, w->res_ratio, axis, trace_ray(th->scene, ray));
 			++axis.x;
 		}
@@ -63,7 +63,7 @@ bool	thread_render(t_thread *th, t_window *w)
 	t_ray		ray;
 	t_axis2		axis;
 
-	ndc = (t_vec4){0.0F, 0.0F, th->scene->camera.c.zvp_dist, 0.0F};
+	ndc = (t_vec4){0.0F, 0.0F, th->scene->camera.u.c.zvp_dist, 0.0F};
 	ray.origin = th->scene->camera.coords;
 	axis.y = 0;
 	while (axis.y < w->rndr_hght)
@@ -76,7 +76,7 @@ bool	thread_render(t_thread *th, t_window *w)
 		{
 			ndc[X] = (2.0F * ((axis.x + 0.5F) / width) - 1.0F) * w->aspectrat;
 			ndc[Y] = 1.0F - 2.0F * ((axis.y + 0.5F) / height);
-			ray.vec = transform_ray_dir(ndc, th->scene->camera.c.orientation);
+			ray.vec = transform_ray_dir(ndc, th->scene->camera.u.c.orientation);
 			set_pixel_multi(th, w->res_ratio, axis, trace_ray(th->scene, ray));
 			++axis.x;
 		}

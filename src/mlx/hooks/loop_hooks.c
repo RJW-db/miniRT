@@ -23,9 +23,9 @@ void	loop_hook(t_rt *rt)
 		else if (rt->win->res_ratio == rt->win->res_r_start - 1 \
 				&& rt->win->auto_res == true)
 			set_starting_res_ratio(rt, time);
-		rt->scene->camera.c.cam_fov_speed = FOV_SCROLL_SPEED * rt->win->delta_time;
-		rt->scene->camera.c.cam_m_speed = CAM_MOVE_SPEED * rt->win->delta_time;
-		rt->scene->camera.c.cam_r_speed = CAM_ROTATION_SPEED * rt->win->delta_time;
+		rt->scene->camera.u.c.cam_fov_speed = FOV_SCROLL_SPEED * rt->win->delta_time;
+		rt->scene->camera.u.c.cam_m_speed = CAM_MOVE_SPEED * rt->win->delta_time;
+		rt->scene->camera.u.c.cam_r_speed = CAM_ROTATION_SPEED * rt->win->delta_time;
 		rt->scene->render = false;
 	}
 }
@@ -64,9 +64,9 @@ static void	render_updates(t_rt *rt)
 			rt->win->res_r_start = rt->win->man_r_start;
 	}
 	upscale_manager_thread(rt);
-	rt->scene->camera.c.cam_fov_speed = FOV_SCROLL_SPEED * rt->win->delta_time;
-	rt->scene->camera.c.cam_m_speed = CAM_MOVE_SPEED * rt->win->delta_time;
-	rt->scene->camera.c.cam_r_speed = CAM_ROTATION_SPEED * rt->win->delta_time;
+	rt->scene->camera.u.c.cam_fov_speed = FOV_SCROLL_SPEED * rt->win->delta_time;
+	rt->scene->camera.u.c.cam_m_speed = CAM_MOVE_SPEED * rt->win->delta_time;
+	rt->scene->camera.u.c.cam_r_speed = CAM_ROTATION_SPEED * rt->win->delta_time;
 	rt->scene->render = false;
 }
 

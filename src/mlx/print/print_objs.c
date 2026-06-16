@@ -33,8 +33,8 @@ static void	print_camera(t_objs cam)
 		"realtimeFov: %f\n   "
 		"zvp_dist: %f\n",
 		cam.coords[X], cam.coords[Y], cam.coords[Z],
-		cam.c.orientation[X], cam.c.orientation[Y], cam.c.orientation[Z],
-		cam.c.fov, cam.c.fov, cam.c.zvp_dist);
+		cam.u.c.orientation[X], cam.u.c.orientation[Y], cam.u.c.orientation[Z],
+		cam.u.c.fov, cam.u.c.fov, cam.u.c.zvp_dist);
 }
 
 static void	print_ambient(t_objs amb)
@@ -42,7 +42,7 @@ static void	print_ambient(t_objs amb)
 	printf("\nAmbient\n     "
 		"Ratio: %f\n    "
 		"Colour: (%d, %d, %d)\n",
-		amb.a.ratio,
+		amb.u.a.ratio,
 		(int)(amb.color[R] * 255), (int)(amb.color[G] * 255),
 		(int)(amb.color[B] * 255));
 }
@@ -54,7 +54,7 @@ static void	print_light(t_objs l)
 		"Radius: %f\n      "
 		"Colour: (%d, %d, %d)\n",
 		l.coords[X], l.coords[Y], l.coords[Z],
-		l.a.ratio, l.l.radius,
+		l.u.a.ratio, l.u.l.radius,
 		(int)(l.color[R] * 255), (int)(l.color[G] * 255),
 		(int)(l.color[B] * 255));
 }
