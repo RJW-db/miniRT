@@ -53,7 +53,10 @@ static void	update_filename_input(const keys_t key, t_window *win)
 			win->filename[win->filename_len] = '\0';
 		}
 		else
-			return (mlx_set_window_title(win->mlx, "Filename too long."));
+		{
+			mlx_set_window_title(win->mlx, "Filename too long.");
+			return ;
+		}
 	}
 	mlx_set_window_title(win->mlx, win->filename);
 }

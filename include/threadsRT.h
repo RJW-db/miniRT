@@ -4,24 +4,12 @@
 // # include <common_defs.h>
 # include <stdbool.h>
 # include <stdint.h>
-# include <pthread.h>
 # include <MLX42/MLX42.h>
 # include "forward_declarations.h"
 
 # define PRT_BUFFER_SIZE 64
 
 typedef float				t_vec4 __attribute__ ((vector_size(16)));
-
-//	Forward declaration of structs;
-// typedef struct s_scene		t_scene;
-// typedef struct s_window		t_window;
-// typedef struct mlx			mlx_t;
-// typedef struct mlx_texture	mlx_texture_t;
-// typedef struct mlx_image	mlx_image_t;
-// typedef struct s_rt			t_rt;
-
-typedef pthread_mutex_t		t_mtx;
-typedef void				*(*t_cast)(void *);
 
 enum e_mtx
 {

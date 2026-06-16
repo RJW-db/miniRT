@@ -1,7 +1,7 @@
 #ifndef PARSING_H
 # define PARSING_H
-# include <dynarr.h>
 # include <libftx.h>
+# include <dynarr.h>
 # include <scene.h>
 # include <RTerror.h>
 

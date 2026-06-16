@@ -1,6 +1,3 @@
-// #include <miniRT.h>
-// #include <unistd.h>
-// #include <stdlib.h>
 #include <stdio.h>
 #include <threadsRT.h>
 #include <render.h>

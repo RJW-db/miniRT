@@ -3,7 +3,6 @@
 
 # define _GNU_SOURCE
 
-// # include <common_defs.h>
 # include <stdbool.h>
 # include <stdint.h>
 # include "forward_declarations.h"
@@ -20,15 +19,6 @@
 # ifndef THREADS
 #  define THREADS 1
 # endif
-
-// # define THREADS 2
-
-//	Forward declaration of structs;
-// typedef struct mlx			mlx_t;
-// typedef struct mlx_texture	mlx_texture_t;
-// typedef struct mlx_image	mlx_image_t;
-typedef pthread_mutex_t		t_mtx;
-typedef void				*(*t_cast)(void *);
 
 struct	s_rt
 {

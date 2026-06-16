@@ -4,14 +4,14 @@ MAKEFLAGS       +=  -j
 COMPILER        :=  gcc
 
 BASE_FLAGS      :=  -std=c99 -Wall -Wextra -Werror
-# PEDANTIC        :=  -Wpedantic -pedantic-errors -Wundef -Wstrict-prototypes
+PEDANTIC        :=  -Wpedantic -pedantic-errors -Wundef -Wstrict-prototypes
 # WARNINGS        :=  -Wshadow -Wconversion -Wsign-conversion         \
 #                     -Wformat=2 -Wuninitialized -Wunreachable-code
 
-# CAST_WARNINGS   :=  -Wbad-function-cast
-# ifeq ($(shell $(COMPILER) --version | grep -c "gcc"),1)
-# CAST_WARNINGS   +=  -Wcast-function-type
-# endif
+CAST_WARNINGS   :=  -Wbad-function-cast
+ifeq ($(shell $(COMPILER) --version | grep -c "gcc"),1)
+CAST_WARNINGS   +=  -Wcast-function-type
+endif
 
 DEPFLAGS        :=  -MMD -MP
 

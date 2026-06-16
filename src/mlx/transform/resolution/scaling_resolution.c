@@ -4,9 +4,9 @@
 
 void	switch_scaling_mode(t_rt *rt)
 {
-	pthread_mutex_lock(rt->mtx + MTX_SWITCH_BOOL);
+	pthread_mutex_lock(&rt->mtx[MTX_SWITCH_BOOL]);
 	rt->win->auto_res = !rt->win->auto_res;
-	pthread_mutex_unlock(rt->mtx + MTX_SWITCH_BOOL);
+	pthread_mutex_unlock(&rt->mtx[MTX_SWITCH_BOOL]);
 	rt->scene->render = true;
 }
 
