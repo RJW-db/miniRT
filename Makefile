@@ -7,6 +7,7 @@ BASE_FLAGS      :=  -std=c99 -Wall -Wextra -Werror
 PEDANTIC        :=  -Wpedantic -pedantic-errors -Wundef -Wstrict-prototypes
 # WARNINGS        :=  -Wshadow -Wconversion -Wsign-conversion         \
 #                     -Wformat=2 -Wuninitialized -Wunreachable-code
+WARNINGS        :=  -Wshadow -Wsign-conversion
 
 CAST_WARNINGS   :=  -Wbad-function-cast
 ifeq ($(shell $(COMPILER) --version | grep -c "gcc"),1)

@@ -74,7 +74,7 @@ static char	*itoa_simple(int num, char *buffer)
 	else
 		n = (uint32_t)num;
 	len = 1;
-	while (n / powi(10, len) != 0)
+	while (n / (uint32_t)powi(10, len) != 0)
 		++len;
 	i += len;
 	len = i;

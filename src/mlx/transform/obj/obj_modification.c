@@ -40,7 +40,7 @@ static void	select_obj_left(t_scene *sc)
 		--index;
 	if (index < 0)
 	{
-		index = sc->o.o_arr_size - 1;
+		index = (ssize_t)(sc->o.o_arr_size - 1);
 		while (index >= 0 && sc->o.objs[index].type == PLANE)
 			--index;
 		if (index < 0)

@@ -53,7 +53,7 @@ static int16_t	process_format(char *line)
 	nbr_of_groups = is_valid_prefix(line, &prefix);
 	if (nbr_of_groups == false)
 		return (errset(perr_msg("process_format 1", ERRFORM, EMSG_2)));
-	i = 2 + ft_isspace(line[2]);
+	i = 2U + (size_t)ft_isspace(line[2]);
 	i += skip_spaces(line + i);
 	if (check_line(line + i, prefix, nbr_of_groups) == false)
 		return (errset(perr_msg("process_format 2", ERRFORM, EMSG_3)));

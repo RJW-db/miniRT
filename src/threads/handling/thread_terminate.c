@@ -10,7 +10,7 @@ void	destroy_mutexes(t_rt *rt, size_t amount)
 	ssize_t	i;
 	int		tmp_errno;
 
-	i = amount - 1;
+	i = (ssize_t)(amount - 1U);
 	while (i > -1)
 	{
 		if (pthread_mutex_destroy(rt->mtx + i) != 0)

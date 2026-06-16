@@ -26,7 +26,7 @@ bool	img_multithreaded(t_rt *rt)
 		return (mlx_delete_image(rt->win->mlx, rt->thread.img), false);
 	}
 	rt->thread.pixels_mlx = (uint8_t *)rt->thread.img->pixels;
-	rt->thread.pixels_own = (uint8_t *)malloc(sizeof(uint8_t) * (width * height * 4));
+	rt->thread.pixels_own = (uint8_t *)malloc(sizeof(uint8_t) * (size_t)width * (size_t)height * 4U);
 	if (rt->thread.pixels_own == NULL)
 		return (mlx_delete_image(rt->win->mlx, rt->thread.img), false);
 	rt->thread.pixels = rt->thread.pixels_own;

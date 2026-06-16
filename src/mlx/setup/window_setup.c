@@ -29,8 +29,8 @@ bool	windows_setup_mlx(t_rt *rt)
 
 static bool	init_mlx(t_window *win)
 {
-	uint32_t	win_width;
-	uint32_t	win_height;
+	int32_t	win_width;
+	int32_t	win_height;
 
 	win_width = SCREEN_WIDTH / 2;
 	win_height = SCREEN_HEIGHT / 2;
@@ -38,8 +38,8 @@ static bool	init_mlx(t_window *win)
 	win->mlx = mlx_init(win_width, win_height, "miniRT is setting up MLX", false);
 	if (win->mlx == NULL)
 		return (false);
-	win->window_hght = win_height;
-	win->window_wdth = win_width;
+	win->window_hght = (uint16_t)win_height;
+	win->window_wdth = (uint16_t)win_width;
 	return (true);
 }
 
@@ -73,7 +73,7 @@ static void	center_window(t_window *win)
 	int32_t	height;
 
 	mlx_get_monitor_size(0, &width, &height);
-	width = (width - win->window_wdth) / 2;
-	height = (height - win->window_hght) / 2;
+	width = (width - (int32_t)win->window_wdth) / 2;
+	height = (height - (int32_t)win->window_hght) / 2;
 	mlx_set_window_pos(win->mlx, width, height);
 }
