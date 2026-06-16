@@ -17,11 +17,11 @@ void	change_scaling_start(t_rt *rt, mlx_key_data_t keydata)
 
 	if (keydata.key == MLX_KEY_2)
 	{
-		rt->win->man_r_start = intclamp(lower_val, 2, 30);
+		rt->win->man_r_start = (uint16_t)intclamp(lower_val, 2, 30);
 	}
 	if (keydata.key == MLX_KEY_3)
 	{
-		rt->win->man_r_start = intclamp(higher_val, 2, 30);
+		rt->win->man_r_start = (uint16_t)intclamp(higher_val, 2, 30);
 	}
 	if (rt->win->auto_res == false)
 		rt->scene->render = true;

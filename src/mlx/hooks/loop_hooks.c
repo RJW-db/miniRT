@@ -19,7 +19,7 @@ void	loop_hook(t_rt *rt)
 		upscale_manager(rt);
 		time = mlx_get_time() - time;
 		if (rt->win->res_ratio == rt->win->res_r_start)
-			rt->win->delta_time = time;
+			rt->win->delta_time = (float)time;
 		else if (rt->win->res_ratio == rt->win->res_r_start - 1 \
 				&& rt->win->auto_res == true)
 			set_starting_res_ratio(rt, time);

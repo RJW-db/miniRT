@@ -58,12 +58,12 @@ float	rt_atof(const char *str)
 	while (str[i] != '\0' && ft_isdigit(str[i]) == true)
 		num = (num * 10.0F) + (str[i++] - '0');
 	if (str[i] != '.')
-		return (num * sign);
+		return (num * (float)sign);
 	++i;
 	place = 1;
 	while (str[i] != '\0' && ft_isdigit(str[i]) == true)
-		num += (float)(str[i++] - '0') / pow(10, (float)(place++));
-	return (num * sign);
+		num += (float)(str[i++] - '0') / (float)pow(10.0, (double)(place++));
+	return (num * (float)sign);
 }
 
 bool	validate_orientation(t_vec4 *or, char **line)

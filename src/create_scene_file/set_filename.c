@@ -34,7 +34,7 @@ void	set_filename(const keys_t key, t_window *win, t_scene *sc)
 
 void	reset_filename(t_window *win)
 {
-	win->filename_len = cpy_str0(win->filename, NAME_FILE);
+	win->filename_len = (uint16_t)cpy_str0(win->filename, NAME_FILE);
 	win->file_creation = false;
 }
 

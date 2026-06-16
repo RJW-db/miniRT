@@ -43,7 +43,7 @@ bool	launch_pthreads(t_rt *rt)
 	if (pthread_create(&rt->thread.thread, NULL, (t_cast)thread_routine_init, &rt->thread) != 0)
 	{
 		pthread_mutex_lock(rt->mtx + MTX_PRINT);
-		errset(perr("launh_pthreads", errno));
+		errset(perr("launh_pthreads", (int16_t)errno));
 		pthread_mutex_unlock(rt->mtx + MTX_PRINT);
 		rt->creation_check = false;
 		pthread_mutex_unlock(rt->mtx + MTX_SYNC);

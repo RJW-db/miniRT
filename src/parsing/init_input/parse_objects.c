@@ -32,13 +32,16 @@ static bool	parse_amb(t_objs *ambient, t_value_check *vc, char *line)
 
 static bool	parse_cam(t_objs *camera, t_value_check *vc, char *line)
 {
+	int32_t	fov;
+
 	camera->coords[X] = rt_atof(line);
 	camera->coords[Y] = rt_atof(nxtvp(&line));
 	camera->coords[Z] = rt_atof(nxtvp(&line));
 	if (validate_orientation(&camera->u.c.orientation, &line) == false)
 		return (errset(perr("parse_cam", ERRFORM)), EXIT_FAILURE);
 	camera->u.c.orientation = vnorm(camera->u.c.orientation);
-	camera->u.c.fov = atoi32(nxtvp(&line));
+	fov = atoi32(nxtvp(&line));
+	camera->u.c.fov = (float)fov;
 	if (camera->u.c.fov < 0 || camera->u.c.fov > 180)
 		return (errset(perr("parse_cam", ERRFORM)), EXIT_FAILURE);
 	camera->u.c.zvp_dist = 1.0F / tanf((camera->u.c.fov * M_PI / 180.0F) / 2.0F);

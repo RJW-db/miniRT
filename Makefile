@@ -5,9 +5,8 @@ COMPILER        :=  gcc
 
 BASE_FLAGS      :=  -std=c99 -Wall -Wextra -Werror
 PEDANTIC        :=  -Wpedantic -pedantic-errors -Wundef -Wstrict-prototypes
-# WARNINGS        :=  -Wshadow -Wconversion -Wsign-conversion         \
-#                     -Wformat=2 -Wuninitialized -Wunreachable-code
-WARNINGS        :=  -Wshadow -Wsign-conversion
+WARNINGS        :=  -Wshadow -Wconversion -Wsign-conversion         \
+                    -Wformat=2 -Wuninitialized -Wunreachable-code
 
 CAST_WARNINGS   :=  -Wbad-function-cast
 ifeq ($(shell $(COMPILER) --version | grep -c "gcc"),1)
@@ -16,10 +15,10 @@ endif
 
 DEPFLAGS        :=  -MMD -MP
 
-# OPTIMIZATION    :=  -O2 -march=native -fno-math-errno              \
-#                     -freciprocal-math -fno-signed-zeros            \
-#                     -fno-trapping-math
-# SECURITY        :=  -fstack-protector-strong
+OPTIMIZATION    :=  -O2 -march=native -fno-math-errno              \
+                    -freciprocal-math -fno-signed-zeros            \
+                    -fno-trapping-math
+SECURITY        :=  -fstack-protector-strong
 THREAD_FLAGS    :=  -pthread
 N_JOBS          :=  $(shell nproc || sysctl -n hw.logicalcpu || echo 1)
 THREADS         :=  $(if $(filter-out 1,$(N_JOBS)),2,1)
@@ -56,7 +55,7 @@ CFLAGS          :=  $(BASE_FLAGS) $(PEDANTIC) $(WARNINGS) $(CAST_WARNINGS)  \
                     -DSCREEN_WIDTH=$(SCREEN_WIDTH)                            \
                     -DSCREEN_HEIGHT=$(SCREEN_HEIGHT)
 
-CFLAGS += -no-pie
+# CFLAGS += -no-pie
 
 ifneq ($(filter valgrind,$(MAKECMDGOALS)),)
 CFLAGS          +=  -g $(DEBUG_FLAGS)
@@ -145,7 +144,7 @@ $(NAME): $(OBJS) $(MLXLIB) $(LIBFTX)
 
 $(BUILD_DIR)/%.o: %.c | $(LIBFTX) $(MLXLIB)
 	@mkdir -p $(@D)
-	@$(COMPILER) $(CFLAGS) $(INCLUDES) -c $< -o $@
+	$(COMPILER) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 $(MLX42_SENTINEL):
 	git submodule update --init $(MLX42_DIR)

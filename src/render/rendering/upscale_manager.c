@@ -15,16 +15,16 @@ void	upscale_manager(t_rt *rt)
 	}
 	else if (rt->win->res_ratio > RES_R_FULL)
 	{
-		rt->win->res_ratio = intclamp( \
-		rt->win->res_ratio - RES_STEP_SIZE, RES_R_FULL, rt->win->res_r_start);
+		rt->win->res_ratio = (uint16_t)(intclamp( \
+			rt->win->res_ratio - RES_STEP_SIZE, RES_R_FULL, rt->win->res_r_start));
 	}
 	else
 	{
 		rt->scene->render_ongoing = false;
 		mlx_set_window_title(rt->win->mlx, "miniRT");
 	}
-	rt->win->rndr_hght = (float)rt->win->mlx->height / rt->win->res_ratio;
-	rt->win->rndr_wdth = (float)rt->win->mlx->width / rt->win->res_ratio;
+	rt->win->rndr_hght = (uint32_t)rt->win->mlx->height / rt->win->res_ratio;
+	rt->win->rndr_wdth = (uint32_t)rt->win->mlx->width / rt->win->res_ratio;
 	render(rt, rt->win);
 }
 
@@ -41,8 +41,8 @@ void	upscale_manager_thread(t_rt *rt)
 	}
 	else if (rt->win->res_ratio > RES_R_FULL)
 	{
-		rt->win->res_ratio = intclamp( \
-		rt->win->res_ratio - RES_STEP_SIZE, RES_R_FULL, rt->win->res_r_start);
+		rt->win->res_ratio = (uint16_t)(intclamp( \
+		rt->win->res_ratio - RES_STEP_SIZE, RES_R_FULL, rt->win->res_r_start));
 		set_shadow_gridsize(rt, RSTAGE_ONGOING);
 	}
 	else
@@ -50,8 +50,8 @@ void	upscale_manager_thread(t_rt *rt)
 		rt->scene->render_ongoing = false;
 		set_shadow_gridsize(rt, RSTAGE_END);
 	}
-	rt->win->rndr_hght = (float)rt->win->mlx->height / rt->win->res_ratio;
-	rt->win->rndr_wdth = (float)rt->win->mlx->width / rt->win->res_ratio;
+	rt->win->rndr_hght = (uint32_t)rt->win->mlx->height / rt->win->res_ratio;
+	rt->win->rndr_wdth = (uint32_t)rt->win->mlx->width / rt->win->res_ratio;
 }
 
 void	set_starting_res_ratio(t_rt *rt, double delta_time)
@@ -60,8 +60,8 @@ void	set_starting_res_ratio(t_rt *rt, double delta_time)
 	const double	adjustment_factor = 8.0F;
 	int				new_ratio;
 
-	new_ratio = rt->win->res_r_start * (1.0F + (error * adjustment_factor));
-	rt->win->res_r_start = intclamp((int)new_ratio, 2, 30);
+	new_ratio = (int)(rt->win->res_r_start * (1.0F + (error * adjustment_factor)));
+	rt->win->res_r_start = (uint16_t)intclamp((int)new_ratio, 2, 30);
 }
 
 static void	set_shadow_gridsize(t_rt *rt, uint8_t stage)

@@ -48,7 +48,7 @@ static bool	img_to_window(t_window *win)
 	win->img = mlx_new_image(win->mlx, win->window_wdth, win->window_hght);
 	if (win->img == NULL)
 		return (false);
-	win->id = mlx_image_to_window(win->mlx, win->img, 0, 0);
+	win->id = (int16_t)mlx_image_to_window(win->mlx, win->img, 0, 0);
 	if (win->id == -1)
 		return (mlx_delete_image(win->mlx, win->img), false);
 	win->pixels = win->img->pixels;

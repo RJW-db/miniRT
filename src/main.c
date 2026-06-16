@@ -14,13 +14,16 @@ int main(int argc, char **argv)
 
 	init_main(&rt, &sc, &read_sc, &win);
 	if (setup_init_parsing(&rt, argc, argv[1]) != EXIT_SUCCESS)
-		return (errset(ERTRN));
+		return ((int)errset(ERTRN));
 	init_hooks(&rt);
 	if (THREADS > 1)
 	{
 		rt.scene->render_ongoing = true;
 		if (multithreaded(&rt) != EXIT_SUCCESS)
-			return (cleanup(&rt), errset(ERTRN));
+		{
+			cleanup(&rt);
+			return ((int)errset(ERTRN));
+		}
 	}
 	mlx_loop(rt.win->mlx);
 	cleanup(&rt);

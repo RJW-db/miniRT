@@ -28,7 +28,7 @@ static void	render_routine(t_thread *th)
 		{
 			thread_fast_render(th, th->rt->win);
 			time = mlx_get_time() - time;
-			th->win->delta_time = time;
+			th->win->delta_time = (float)time;
 		}
 		else if (thread_render(th, th->rt->win) == false)
 		{
@@ -37,7 +37,7 @@ static void	render_routine(t_thread *th)
 				&& check_bool(th->rt->mtx + MTX_SWITCH_BOOL, th->rt->win->auto_res))
 				set_starting_res_ratio(th->rt, time);
 		}
-		print_performance_stats(th->rt, 1.0F / time);
+		print_performance_stats(th->rt, (float)(1.0 / time));
 		resynchronize_after_rendering(th);
 	}
 	pthread_mutex_lock(th->rt->mtx + MTX_STOPPED_THREADS);

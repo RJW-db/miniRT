@@ -33,10 +33,10 @@ enum	custom_error
 };
 
 // error.c
-int32_t		errset(const int64_t errnum);
+int16_t	errset(const int64_t errnum);
 
 // print.c
-int16_t		perr(char *place, int16_t num);
-int16_t		perr_msg(char *place, const int16_t errnum, char *msg);
+int16_t	perr(char *place, int16_t num);
+int16_t	perr_msg(char *place, const int16_t errnum, char *msg);
 
 #endif

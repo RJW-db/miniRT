@@ -48,7 +48,7 @@ t_vec4	calc_lighting(t_scene *sc, t_vec4 point, t_vec4 normal, t_vec4 obj_color)
 				shadow = 1.0F;
 		}
 		else
-			shadow = calc_soft_shadow_circle(sc, (t_ray){point, normal}, sc->l.lights[i].coords, i, sc->shadow_grsize);
+			shadow = calc_soft_shadow_circle(sc, (t_ray){point, normal}, sc->l.lights[i].coords, i, (uint8_t)sc->shadow_grsize);
 		diff = clamp(vdot(normal, light_dir), 0.0F, 1.0F) * sc->l.lights[i].u.l.brightness;
 		result += (obj_color * sc->l.lights[i].color * bcast3(diff * shadow));
 		++i;

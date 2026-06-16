@@ -13,7 +13,7 @@ int16_t	parse_scene_file(const char *file, t_scene *sc)
 
 	ft_bzero(&vc, sizeof(t_value_check));
 	if (fd < 0)
-		return (errset(perr("parse_scene_file open", errno)));
+		return (errset(perr("parse_scene_file open", (int16_t)errno)));
 	if (ft_strncmp(file + (ft_strlen(file) - 3), ".rt", 4) != 0)
 		return (close(fd), errset(perr("parse_scene_file not .rt", ERRFEXT)));
 	if (init_dynarr(&vc) == false)
