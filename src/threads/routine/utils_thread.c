@@ -5,7 +5,7 @@
 #include <miniRT.h>
 #include <threadsRT.h>
 #include <unistd.h>
-#include <libft.h>
+#include <libftx.h>
 
 bool	check_bool(t_mtx *mutex, bool to_check)
 {

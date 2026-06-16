@@ -1,4 +1,4 @@
-#include <libft.h>
+#include <libftx.h>
 #include <stdio.h>
 #include <miniRT.h>
 #include <RTerror.h>
@@ -16,7 +16,7 @@ void	destroy_mutexes(t_rt *rt, size_t amount)
 		if (pthread_mutex_destroy(rt->mtx + i) != 0)
 		{
 			tmp_errno = errno;
-			cpy_str(on_err, MTX_FAIL);
+			cpy_str0(on_err, MTX_FAIL);
 			nbr_to_buff(on_err + sizeof(MTX_FAIL) - 1, (int64_t)i);
 			errset(perr_msg("destroy_mutexes", tmp_errno, on_err));
 		}

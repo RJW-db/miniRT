@@ -3,7 +3,9 @@
 
 # define _GNU_SOURCE
 
-# include <common_defs.h>
+// # include <common_defs.h>
+# include <stdbool.h>
+# include <stdint.h>
 # include <threadsRT.h>
 
 # ifndef SCREEN_WIDTH

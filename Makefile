@@ -8,19 +8,20 @@ BASE_FLAGS      :=  -std=c99 -Wall -Wextra -Werror
 # WARNINGS        :=  -Wshadow -Wconversion -Wsign-conversion         \
 #                     -Wformat=2 -Wuninitialized -Wunreachable-code
 
-CAST_WARNINGS   :=  -Wbad-function-cast
-ifeq ($(shell $(COMPILER) --version | grep -c "gcc"),1)
-CAST_WARNINGS   +=  -Wcast-function-type
-endif
+# CAST_WARNINGS   :=  -Wbad-function-cast
+# ifeq ($(shell $(COMPILER) --version | grep -c "gcc"),1)
+# CAST_WARNINGS   +=  -Wcast-function-type
+# endif
 
 DEPFLAGS        :=  -MMD -MP
 
-OPTIMIZATION    :=  -O2 -march=native -fno-math-errno              \
-                    -freciprocal-math -fno-signed-zeros            \
-                    -fno-trapping-math
-SECURITY        :=  -fstack-protector-strong
+# OPTIMIZATION    :=  -O2 -march=native -fno-math-errno              \
+#                     -freciprocal-math -fno-signed-zeros            \
+#                     -fno-trapping-math
+# SECURITY        :=  -fstack-protector-strong
 THREAD_FLAGS    :=  -pthread
-THREADS         :=  2
+N_JOBS          :=  $(shell nproc || sysctl -n hw.logicalcpu || echo 1)
+THREADS         :=  $(if $(filter-out 1,$(N_JOBS)),2,1)
 
 OS              :=  $(shell uname -s)
 ifeq ($(OS),Linux)
@@ -54,6 +55,8 @@ CFLAGS          :=  $(BASE_FLAGS) $(PEDANTIC) $(WARNINGS) $(CAST_WARNINGS)  \
                     -DSCREEN_WIDTH=$(SCREEN_WIDTH)                            \
                     -DSCREEN_HEIGHT=$(SCREEN_HEIGHT)
 
+CFLAGS += -no-pie
+
 ifneq ($(filter valgrind,$(MAKECMDGOALS)),)
 CFLAGS          +=  -g $(DEBUG_FLAGS)
 else ifneq ($(filter debug,$(MAKECMDGOALS)),)
@@ -77,12 +80,12 @@ SRC_DIR         :=  src
 BUILD_DIR       :=  .build
 EXT_DIR         :=  extern_libraries
 
-# Libft
-LIBFT_A         :=  libft.a
-LIBFT_DIR       :=  $(EXT_DIR)/libft
-LIBFT           :=  $(LIBFT_DIR)/$(LIBFT_A)
-LIBFT_INC       :=  $(LIBFT_DIR)/$(INC_DIR)
-LIBFT_SENTINEL  :=  $(LIBFT_DIR)/.git
+# Libftx
+LIBFTX_A         :=  libftx.a
+LIBFTX_DIR       :=  $(EXT_DIR)/libftx
+LIBFTX           :=  $(LIBFTX_DIR)/$(LIBFTX_A)
+LIBFTX_INC       :=  $(LIBFTX_DIR)/$(INC_DIR)
+LIBFTX_SENTINEL  :=  $(LIBFTX_DIR)/.git
 
 # MLX42
 MLX42_DIR       :=  $(EXT_DIR)/MLX42
@@ -128,38 +131,52 @@ SRCS            :=  $(addprefix $(SRC_DIR)/, $(MAIN))                           
 OBJS            :=  $(SRCS:%.c=$(BUILD_DIR)/%.o)
 DEPS            :=  $(OBJS:.o=.d)
 
-INCLUDES        :=  -I$(INC_DIR) -I$(LIBFT_INC) $(MLX42_INC)
+INCLUDES        :=  -I$(INC_DIR) -I$(LIBFTX_INC) $(MLX42_INC)
 
 DELETE          :=  *.out           **/*.out        .DS_Store   \
                     **/.DS_Store    .dSYM/          **/.dSYM/
 
 all: $(NAME)
 
-$(NAME): $(OBJS) $(MLXLIB) $(LIBFT)
-	@$(COMPILER) $(CFLAGS) $(OBJS) $(MLXLIB) $(LIBFT) $(MLX_LINK) -o $(NAME)
+$(NAME): $(OBJS) $(MLXLIB) $(LIBFTX)
+	@$(COMPILER) $(CFLAGS) $(OBJS) $(MLXLIB) $(LIBFTX) $(MLX_LINK) -o $(NAME)
 	@printf "$(CREATED)" $@ $(CUR_DIR)
 
-$(BUILD_DIR)/%.o: %.c | $(LIBFT) $(MLXLIB)
+$(BUILD_DIR)/%.o: %.c | $(LIBFTX) $(MLXLIB)
 	@mkdir -p $(@D)
 	@$(COMPILER) $(CFLAGS) $(INCLUDES) -c $< -o $@
+
+$(MLX42_SENTINEL):
+	git submodule update --init $(MLX42_DIR)
 
 $(MLXLIB): | $(MLX42_SENTINEL)
 	cmake -B $(MLX42_DIR)/build $(MLX42_DIR)
 	cmake --build $(MLX42_DIR)/build --parallel
 	@printf "$(CREATED)" libmlx42.a $(CUR_DIR)
 
-$(LIBFT): | $(MLXLIB)
-	@$(MAKE) $(PRINT_NO_DIR) -C $(LIBFT_DIR) $(firstword $(filter debug valgrind,$(MAKECMDGOALS)) all)
+$(LIBFTX_SENTINEL): | $(MLX42_SENTINEL)
+	git submodule update --init $(LIBFTX_DIR)
+	git -C $(LIBFTX_DIR) checkout $(shell git config -f .gitmodules submodule.$(LIBFTX_DIR).branch || echo main)
+	git -C $(LIBFTX_DIR) submodule update --remote --merge
+	git -C $(LIBFTX_DIR) submodule update --init src/printf
+	git -C $(LIBFTX_DIR) submodule update --init src/get_next_line
+	git -C $(LIBFTX_DIR) submodule update --init src/dbltoa
+	git -C $(LIBFTX_DIR) submodule update --init src/dynarr
+	git -C $(LIBFTX_DIR)/src/printf checkout $$(git config -f $(abspath $(LIBFTX_DIR))/.gitmodules submodule.src/printf.branch || echo main)
+	git -C $(LIBFTX_DIR)/src/get_next_line checkout $$(git config -f $(abspath $(LIBFTX_DIR))/.gitmodules submodule.src/get_next_line.branch || echo main)
+	git -C $(LIBFTX_DIR)/src/dbltoa checkout $$(git config -f $(abspath $(LIBFTX_DIR))/.gitmodules submodule.src/dbltoa.branch || echo main)
+	git -C $(LIBFTX_DIR)/src/dynarr checkout $$(git config -f $(abspath $(LIBFTX_DIR))/.gitmodules submodule.src/dynarr.branch || echo main)
+
+$(LIBFTX): | $(LIBFTX_SENTINEL)
+	@$(MAKE) $(PRINT_NO_DIR) -C $(LIBFTX_DIR) SUBMODULES_CMD= all printf gnl dbltoa dynarr $(firstword $(filter debug valgrind,$(MAKECMDGOALS)) all)
 
 clean:
 	@$(RM) $(BUILD_DIR) $(DELETE)
 	@printf "$(REMOVED)" $(BUILD_DIR)/ $(CUR_DIR)$(BUILD_DIR)/
 
 fclean: clean
-# 	@[ ! -e "$(LIBFT_SENTINEL)" ] || $(MAKE) $(PRINT_NO_DIR) -C $(LIBFT_DIR) fclean
-# 	@[ ! -e "$(MLX42_SENTINEL)" ] || $(RM) "$(MLX42_DIR)/build"
-	@$(MAKE) $(PRINT_NO_DIR) -C $(LIBFT_DIR) fclean
-	@$(RM) "$(MLX42_DIR)/build"
+	@[ ! -e "$(LIBFTX_SENTINEL)" ] || $(MAKE) $(PRINT_NO_DIR) -C $(LIBFTX_DIR) fclean
+	@[ ! -e "$(MLX42_SENTINEL)" ] || $(RM) "$(MLX42_DIR)/build"
 	@$(RM) $(NAME)
 	@printf "$(REMOVED)" $(NAME) $(CUR_DIR)
 

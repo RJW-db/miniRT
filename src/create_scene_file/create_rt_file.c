@@ -32,15 +32,15 @@ size_t	color_line(t_dbltoa *dbl, char *rt_line, t_vec4 color)
 	dbl->value = color[R] * 255;
 	dbl->precision = 0;
 	dbltoa_buff_prec(*dbl);
-	line_index = cpy_str(rt_line, dbl->buff);
+	line_index = cpy_str0(rt_line, dbl->buff);
 	rt_line[line_index++] = ',';
 	dbl->value = color[G] * 255;
 	dbltoa_buff_prec(*dbl);
-	line_index += cpy_str(rt_line + line_index, dbl->buff);
+	line_index += cpy_str0(rt_line + line_index, dbl->buff);
 	rt_line[line_index++] = ',';
 	dbl->value = color[B] * 255;
 	dbltoa_buff_prec(*dbl);
-	line_index += cpy_str(rt_line + line_index, dbl->buff);
+	line_index += cpy_str0(rt_line + line_index, dbl->buff);
 	return (line_index);
 }
 
@@ -52,16 +52,16 @@ size_t	coords_line(t_dbltoa *dbl, char *rt_line, t_vec4 coords)
 	dbl->precision = 3;
 	dbl->trim_trailing_zeros = true;
 	dbltoa_buff_prec(*dbl);
-	line_index = cpy_str(rt_line, dbl->buff);
+	line_index = cpy_str0(rt_line, dbl->buff);
 	rt_line[line_index++] = ',';
 	dbl->value = coords[Y];
 	dbltoa_buff_prec(*dbl);
-	line_index += cpy_str(rt_line + line_index, dbl->buff);
+	line_index += cpy_str0(rt_line + line_index, dbl->buff);
 	rt_line[line_index++] = ',';
 	dbl->value = coords[Z];
 	dbltoa_buff_prec(*dbl);
-	line_index += cpy_str(rt_line + line_index, dbl->buff);
-	line_index += cpy_str(rt_line + line_index, "\t\t");
+	line_index += cpy_str0(rt_line + line_index, dbl->buff);
+	line_index += cpy_str0(rt_line + line_index, "\t\t");
 	return (line_index);
 }
 

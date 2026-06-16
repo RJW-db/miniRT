@@ -1,9 +1,10 @@
 #ifndef RTMLX_H
 # define RTMLX_H
 # include <MLX42/MLX42.h>
-# include <libft.h> 
+# include <libftx.h> 
 # include <miniRT.h>
 
+# define FILE_CREATION 256	// (NAME_MAX || MAX_PATH) + 1
 # define LOGO_PATH "images/glasses.png"
 # define NAME_FILE "Name your .rt file:  "
 # define CAM_ROTATION_SPEED 1.0F

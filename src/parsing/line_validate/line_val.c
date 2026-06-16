@@ -1,3 +1,4 @@
+#include "get_next_line.h"
 #include <parsing.h>
 
 //	Static Functions
@@ -11,7 +12,7 @@ int16_t	line_validation(const int fd, t_scene *sc, t_value_check *vc)
 	char			*skip_sp;
 	char			*line;
 
-	line = gnl(fd);
+	line = get_next_line(fd);
 	while (line != NULL)
 	{
 		if (*line != '\n' && *line != '#')
@@ -25,7 +26,7 @@ int16_t	line_validation(const int fd, t_scene *sc, t_value_check *vc)
 			}
 		}
 		free_str(&line);
-		line = gnl(fd);
+		line = get_next_line(fd);
 	}
 	if (errset(ERTRN) == 0 && errno == 0)
 		check_values(vc);

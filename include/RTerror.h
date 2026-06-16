@@ -1,6 +1,7 @@
 #ifndef ERROR_H
 # define ERROR_H
-# include <common_defs.h>
+// # include <common_defs.h>
+# include <stdint.h>
 # include <errno.h>
 
 // Custom error messages

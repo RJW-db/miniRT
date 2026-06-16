@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <threadsRT.h>
 #include <render.h>
-#include <libft.h>
+#include <libftx.h>
 #include <RTerror.h>
 
 bool	initialize_mutexes(t_rt *rt)

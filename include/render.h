@@ -1,6 +1,6 @@
 #ifndef RENDER_H
 # define RENDER_H
-# include <common_defs.h>
+// # include <common_defs.h>
 # include <scene.h>
 
 # define RES_STEP_SIZE 1

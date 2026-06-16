@@ -1,7 +1,9 @@
 #ifndef THREADSRT_H
 # define THREADSRT_H
 
-# include <common_defs.h>
+// # include <common_defs.h>
+# include <stdbool.h>
+# include <stdint.h>
 # include <pthread.h>
 
 # define PRT_BUFFER_SIZE 64

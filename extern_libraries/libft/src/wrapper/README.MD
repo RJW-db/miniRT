@@ -1,1 +1,0 @@
-whenever you gonna use the malloc wrapper for linux, always include the linker flags -Wl,--wrap=malloc when compiling for an executable

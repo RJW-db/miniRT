@@ -1,6 +1,6 @@
 #ifndef UTILS_H
 # define UTILS_H
-# include <common_defs.h>
+// # include <common_defs.h>
 # include <scene.h>
 # include <RTmlx.h>
 
