@@ -44,7 +44,7 @@ static bool	parse_cam(t_objs *camera, t_value_check *vc, char *line)
 	camera->u.c.fov = (float)fov;
 	if (camera->u.c.fov < 0 || camera->u.c.fov > 180)
 		return (errset(perr("parse_cam", ERRFORM)), EXIT_FAILURE);
-	camera->u.c.zvp_dist = 1.0F / tanf((camera->u.c.fov * M_PI / 180.0F) / 2.0F);
+	camera->u.c.zvp_dist = 1.0F / tanf((camera->u.c.fov * (float)M_PI / 180.0F) / 2.0F);
 	++vc->cam_amount;
 	return (EXIT_SUCCESS);
 }

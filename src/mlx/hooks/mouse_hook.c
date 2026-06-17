@@ -10,14 +10,14 @@ void	scroll_fov_hook(double xdelta, double ydelta, t_scene *sc)
 	(void)(xdelta);
 	if (ydelta > 0.0 && sc->camera.u.c.fov > 0.1)
 	{
-		sc->camera.u.c.fov = clamp(sc->camera.u.c.fov - sc->camera.u.c.cam_fov_speed, 0.0, 180.0);
-		sc->camera.u.c.zvp_dist = 1.0 / tanf((sc->camera.u.c.fov * M_PI / 180.0) / 2.0);
+		sc->camera.u.c.fov = clamp(sc->camera.u.c.fov - sc->camera.u.c.cam_fov_speed, 0.0F, 180.0F);
+		sc->camera.u.c.zvp_dist = 1.0F / tanf((sc->camera.u.c.fov * (float)M_PI / 180.0F) / 2.0F);
 		sc->render = true;
 	}
 	else if (ydelta < 0.0 && sc->camera.u.c.fov < FOV_MAX)
 	{
-		sc->camera.u.c.fov = clamp(sc->camera.u.c.fov + sc->camera.u.c.cam_fov_speed, 0.0, 180.0);
-		sc->camera.u.c.zvp_dist = 1.0 / tanf((sc->camera.u.c.fov * M_PI / 180.0) / 2.0);
+		sc->camera.u.c.fov = clamp(sc->camera.u.c.fov + sc->camera.u.c.cam_fov_speed, 0.0F, 180.0F);
+		sc->camera.u.c.zvp_dist = 1.0F / tanf((sc->camera.u.c.fov * (float)M_PI / 180.0F) / 2.0F);
 		sc->render = true;
 	}
 }

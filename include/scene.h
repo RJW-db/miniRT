@@ -140,4 +140,5 @@ void	objs_line(t_objs *objs, size_t amount, t_dbltoa *dbl, int fd);
 
 void	print_obj_info(t_scene *sc);
 void	geometric_primitives(t_objs *obj);
+
 #endif

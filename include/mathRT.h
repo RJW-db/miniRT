@@ -51,5 +51,4 @@ float		vlen(t_vec4 v)__attribute__((const, hot));
 t_vec4		vrefl(t_vec4 v, t_vec4 n)__attribute__((const, hot));
 t_vec4		vrotate(t_vec4 v, t_vec4 axis, float angle);
 
-
 #endif

@@ -106,13 +106,6 @@ bool	is_occluded(t_scene *sc, t_vec4 origin, t_vec4 dir, float max_dist)
 	return false;
 }
 
-// Smoothstep helper (same idea as GLSL's smoothstep)
-// static float	smoothstep(float edge0, float edge1, float x)
-// {
-// 	float t = clamp((x - edge0) / (edge1 - edge0), 0.0F, 1.0F);
-// 	return t * t * (3.0F - 2.0F * t);
-// }
-
 static float	calc_soft_shadow_circle(t_scene *sc, t_ray ray, t_vec4 light_pos, uint32_t light, uint8_t sample_count)
 {
 	t_vec4		light_dir;
@@ -144,72 +137,6 @@ static float	calc_soft_shadow_circle(t_scene *sc, t_ray ray, t_vec4 light_pos, u
 			vis += 1.0F;
 		++i;
 	}
-	// if (sample_count == 2)
-	// 	printf("dist: %.3f, vis; %.3f\n", distance, vis);
 	float softness = clamp((distance - radius) / (radius * 0.1F), 0.0F, 1.0F);
 	return lerp(vis / (float)sample_count, 1.0F, softness);
 }
-
-
-
-
-// t_vec4	rotate_2d(t_vec4 v, float angle)
-// {
-// 	const float cos_a = cosf(angle);
-// 	const float sin_a = sinf(angle);
-
-// 	return ((t_vec4)
-// 	{
-// 		v[X] * cos_a - v[Y] * sin_a,
-// 		v[X] * sin_a + v[Y] * cos_a,
-// 		0.0F,
-// 		0.0F
-// 	});
-// }
-
-// t_vec4	grid_disk_sample(int idx, int grid_size, float angle)
-// {
-// 	int		x;
-// 	int		y;
-// 	float	fx;
-// 	float	fy;
-// 	t_vec4	offset;
-
-// 	x = idx % grid_size;
-// 	y = idx / grid_size;
-// 	fx = ((float)x + 0.5F) / grid_size * 2.0F - 1.0F;
-// 	fy = ((float)y + 0.5F) / grid_size * 2.0F - 1.0F;
-// 	offset = (t_vec4){fx, fy, 0.0F, 0.0F};
-
-// 	// Optional: discard points outside unit disk
-// 	if (fx * fx + fy * fy > 1.0F)
-// 		return (t_vec4){0.0F, 0.0F, 0.0F, 0.0F};
-
-// 	return (rotate_2d(offset, angle));
-// }
-
-// t_vec4	get_d_sample_pos(t_vec4 light_pos, int idx, int grid_size, float angle, float radius)
-// {
-// 	const t_vec4	offset = grid_disk_sample(idx, grid_size, angle);
-// 	return vadd(light_pos, vscale(offset, radius));
-// }
-
-// static float	calc_soft_shadow(t_scene *sc, t_ray ray, t_vec4 light_pos, uint32_t light)
-// {
-// 	uint16_t		hit_count;
-// 	uint16_t		i;
-// 	const float		radius = sc->l.lights[light].l.radius;
-// 	const float		angle = 3.14159F * (light * 0.618F);
-// 	const float		distance = vlen(vsub(light_pos, ray.origin));
-// 	const uint16_t	total_samples = sc->shadow_grsize * sc->shadow_grsize;
-
-// 	hit_count = 0;
-// 	i = 0;
-// 	while (i < total_samples)
-// 	{
-// 		if (is_occluded(sc, ray.origin, vnorm(vsub(get_d_sample_pos(light_pos, i, sc->shadow_grsize, angle, radius), ray.origin)), distance))
-// 			hit_count++;
-// 		++i;
-// 	}
-// 	return 1.0F - ((float)hit_count / (float)total_samples);
-// }
