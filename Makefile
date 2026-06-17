@@ -1,15 +1,18 @@
 NAME            :=  miniRT
 
 MAKEFLAGS       +=  -j
-COMPILER        :=  gcc
+COMPILER        :=  cc
 
 BASE_FLAGS      :=  -std=c99 -Wall -Wextra -Werror
 PEDANTIC        :=  -Wpedantic -pedantic-errors -Wundef -Wstrict-prototypes
 WARNINGS        :=  -Wshadow -Wconversion -Wsign-conversion         \
                     -Wformat=2 -Wuninitialized -Wunreachable-code
 
+IS_CLANG        :=  $(shell $(COMPILER) --version | grep -qi clang && echo 1 || echo 0)
+IS_GCC          :=  $(shell $(COMPILER) --version | grep -qi gcc && echo 1 || echo 0)
+
 CAST_WARNINGS   :=  -Wbad-function-cast
-ifeq ($(shell $(COMPILER) --version | grep -c "gcc"),1)
+ifeq ($(IS_GCC),1)
 CAST_WARNINGS   +=  -Wcast-function-type
 endif
 
@@ -24,18 +27,25 @@ N_JOBS          :=  $(shell nproc || sysctl -n hw.logicalcpu || echo 1)
 THREADS         :=  $(if $(filter-out 1,$(N_JOBS)),2,1)
 
 OS              :=  $(shell uname -s)
-ifeq ($(OS),Linux)
+FSANITIZE       :=
+
+ifeq ($(IS_GCC),1)
 OPTIMIZATION    +=  -fsingle-precision-constant -flto=auto -fuse-linker-plugin
-SECURITY        +=  -D_FORTIFY_SOURCE=2
-FSANITIZE       :=  leak,
-else ifeq ($(OS),Darwin)
-OPTIMIZATION    +=  -flto
 endif
 
-SANITIZERS      :=  -fsanitize=$(FSANITIZE)address,undefined,null,integer-divide-by-zero,signed-integer-overflow,bounds,alignment
+ifeq ($(IS_CLANG),1)
+OPTIMIZATION    +=  -flto=thin
+endif
+
+ifeq ($(OS),Linux)
+SECURITY        +=  -D_FORTIFY_SOURCE=2
+FSANITIZE       :=  leak,
+endif
+
+SANITIZERS      :=  -fsanitize=$(FSANITIZE)address,undefined
 DEBUG_FLAGS     :=  -fno-omit-frame-pointer
 
-SCREEN_RES      :=
+SCREEN_RES      :=	1920x1080
 ifeq ($(OS),Linux)
 SCREEN_RES      :=  $(shell xrandr 2>/dev/null | grep '*' | uniq | awk '{print $$1}' | head -1)
 else ifeq ($(OS),Darwin)
@@ -55,12 +65,21 @@ CFLAGS          :=  $(BASE_FLAGS) $(PEDANTIC) $(WARNINGS) $(CAST_WARNINGS)  \
                     -DSCREEN_WIDTH=$(SCREEN_WIDTH)                            \
                     -DSCREEN_HEIGHT=$(SCREEN_HEIGHT)
 
-# CFLAGS += -no-pie
-
 ifneq ($(filter valgrind,$(MAKECMDGOALS)),)
 CFLAGS          +=  -g $(DEBUG_FLAGS)
 else ifneq ($(filter debug,$(MAKECMDGOALS)),)
-CFLAGS          +=  -g2 $(SANITIZERS) $(DEBUG_FLAGS) -fno-sanitize-recover=all
+CFLAGS          +=  -g3 $(SANITIZERS) $(DEBUG_FLAGS) -fno-sanitize-recover=all
+endif
+
+PRINT_NO_DIR    :=  --no-print-directory
+RM              :=  rm -rf
+
+# MLX42
+ifeq ($(OS),Darwin)
+GLFW_PREFIX     :=  $(shell brew --prefix glfw 2>/dev/null)
+MLX_LINK        :=  -lglfw -L$(GLFW_PREFIX)/lib
+else
+MLX_LINK        :=  -lglfw -lm -ldl -lpthread
 endif
 
 PRINT_NO_DIR    :=  --no-print-directory
@@ -158,10 +177,7 @@ $(LIBFTX_SENTINEL): | $(MLX42_SENTINEL)
 	git submodule update --init $(LIBFTX_DIR)
 	git -C $(LIBFTX_DIR) checkout $(shell git config -f .gitmodules submodule.$(LIBFTX_DIR).branch || echo main)
 	git -C $(LIBFTX_DIR) submodule update --remote --merge
-	git -C $(LIBFTX_DIR) submodule update --init src/printf
-	git -C $(LIBFTX_DIR) submodule update --init src/get_next_line
-	git -C $(LIBFTX_DIR) submodule update --init src/dbltoa
-	git -C $(LIBFTX_DIR) submodule update --init src/dynarr
+	git -C $(LIBFTX_DIR) submodule update --init src/printf src/get_next_line src/dbltoa src/dynarr
 	git -C $(LIBFTX_DIR)/src/printf checkout $$(git config -f $(abspath $(LIBFTX_DIR))/.gitmodules submodule.src/printf.branch || echo main)
 	git -C $(LIBFTX_DIR)/src/get_next_line checkout $$(git config -f $(abspath $(LIBFTX_DIR))/.gitmodules submodule.src/get_next_line.branch || echo main)
 	git -C $(LIBFTX_DIR)/src/dbltoa checkout $$(git config -f $(abspath $(LIBFTX_DIR))/.gitmodules submodule.src/dbltoa.branch || echo main)

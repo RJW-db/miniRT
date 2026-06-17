@@ -1,7 +1,6 @@
 #ifndef THREADSRT_H
 # define THREADSRT_H
 
-// # include <common_defs.h>
 # include <stdbool.h>
 # include <stdint.h>
 # include <MLX42/MLX42.h>
@@ -9,7 +8,7 @@
 
 # define PRT_BUFFER_SIZE 64
 
-typedef float				t_vec4 __attribute__ ((vector_size(16)));
+typedef float	t_vec4 __attribute__ ((vector_size(16)));
 
 enum e_mtx
 {
