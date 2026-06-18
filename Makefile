@@ -1,7 +1,7 @@
 NAME			:=	miniRT
 
 MAKEFLAGS		+=	-j
-COMPILER		:=	clang
+COMPILER		:=	cc
 
 BASE_FLAGS		:=	-std=c99 -Wall -Wextra -Werror
 PEDANTIC		:=	-Wpedantic -pedantic-errors -Wundef -Wstrict-prototypes
@@ -182,7 +182,7 @@ $(LIBFTX_SENTINEL): | $(MLX42_SENTINEL)
 	git -C $(LIBFTX_DIR)/src/dynarr checkout $$(git config -f $(abspath $(LIBFTX_DIR))/.gitmodules submodule.src/dynarr.branch || echo main)
 
 $(LIBFTX): | $(LIBFTX_SENTINEL)
-	@$(MAKE) $(PRINT_NO_DIR) -C $(LIBFTX_DIR) SUBMODULES_CMD= all gnl dbltoa dynarr $(firstword $(filter debug valgrind,$(MAKECMDGOALS)) all)
+	@$(MAKE) $(PRINT_NO_DIR) -C $(LIBFTX_DIR) SUBMODULES_CMD= COMPILER=$(COMPILER) all gnl dbltoa dynarr $(firstword $(filter debug valgrind,$(MAKECMDGOALS)) all)
 
 clean:
 	@$(RM) $(BUILD_DIR) $(DELETE)
