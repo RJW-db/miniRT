@@ -176,14 +176,13 @@ $(LIBFTX_SENTINEL): | $(MLX42_SENTINEL)
 	git submodule update --init $(LIBFTX_DIR)
 	git -C $(LIBFTX_DIR) checkout $(shell git config -f .gitmodules submodule.$(LIBFTX_DIR).branch || echo main)
 	git -C $(LIBFTX_DIR) submodule update --remote --merge
-	git -C $(LIBFTX_DIR) submodule update --init src/printf src/get_next_line src/dbltoa src/dynarr
-	git -C $(LIBFTX_DIR)/src/printf checkout $$(git config -f $(abspath $(LIBFTX_DIR))/.gitmodules submodule.src/printf.branch || echo main)
+	git -C $(LIBFTX_DIR) submodule update --init src/get_next_line src/dbltoa src/dynarr
 	git -C $(LIBFTX_DIR)/src/get_next_line checkout $$(git config -f $(abspath $(LIBFTX_DIR))/.gitmodules submodule.src/get_next_line.branch || echo main)
 	git -C $(LIBFTX_DIR)/src/dbltoa checkout $$(git config -f $(abspath $(LIBFTX_DIR))/.gitmodules submodule.src/dbltoa.branch || echo main)
 	git -C $(LIBFTX_DIR)/src/dynarr checkout $$(git config -f $(abspath $(LIBFTX_DIR))/.gitmodules submodule.src/dynarr.branch || echo main)
 
 $(LIBFTX): | $(LIBFTX_SENTINEL)
-	@$(MAKE) $(PRINT_NO_DIR) -C $(LIBFTX_DIR) SUBMODULES_CMD= all printf gnl dbltoa dynarr $(firstword $(filter debug valgrind,$(MAKECMDGOALS)) all)
+	@$(MAKE) $(PRINT_NO_DIR) -C $(LIBFTX_DIR) SUBMODULES_CMD= all gnl dbltoa dynarr $(firstword $(filter debug valgrind,$(MAKECMDGOALS)) all)
 
 clean:
 	@$(RM) $(BUILD_DIR) $(DELETE)
