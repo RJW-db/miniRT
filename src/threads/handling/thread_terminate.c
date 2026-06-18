@@ -1,7 +1,7 @@
-#include <libftx.h>
 #include <stdio.h>
-#include <miniRT.h>
-#include <RTerror.h>
+#include "libftx.h"
+#include "miniRT.h"
+#include "RTerror.h"
 #define MTX_FAIL "pthread_mutex_destroy() failed on index "
 
 void	destroy_mutexes(t_rt *rt, size_t amount)

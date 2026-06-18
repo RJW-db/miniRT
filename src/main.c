@@ -1,9 +1,7 @@
-#include <miniRT.h>
-#include <RTerror.h>
-// #include <scene.h>
-// #include <RTmlx.h>
-#include <setup_clean.h>
-#include <render.h>
+#include "miniRT.h"
+#include "render.h"
+#include "RTerror.h"
+#include "setup_clean.h"
 
 int main(int argc, char **argv)
 {

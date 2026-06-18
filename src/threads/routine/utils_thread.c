@@ -1,11 +1,10 @@
-#include <stdlib.h>
-#include <miniRT.h>
-#include <RTmlx.h>
-#include <render.h>
-#include <miniRT.h>
-#include <threadsRT.h>
 #include <unistd.h>
-#include <libftx.h>
+#include <stdlib.h>
+#include "libftx.h"
+#include "miniRT.h"
+#include "render.h"
+#include "RTmlx.h"
+#include "threadsRT.h"
 
 bool	check_bool(t_mtx *mutex, bool to_check)
 {

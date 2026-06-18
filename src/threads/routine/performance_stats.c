@@ -1,11 +1,10 @@
-#include <scene.h>
-#include <RTmlx.h>
-#include <mathRT.h>
-#include <render.h>
-#include <threadsRT.h>
-#include <setup_clean.h>
 #include <limits.h>
-#include <dbltoa.h>
+#include "scene.h"
+#include "RTmlx.h"
+#include "render.h"
+#include "mathRT.h"
+#include "threadsRT.h"
+#include "setup_clean.h"
 
 //	Static Functions
 static int	powi(int base, int pow);

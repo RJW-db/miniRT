@@ -1,6 +1,6 @@
-#include <RTmlx.h>
-#include <render.h>
-#include <mathRT.h>
+#include "RTmlx.h"
+#include "render.h"
+#include "mathRT.h"
 
 //	Static Function
 static void	mouse_clicks_on_obj(t_scene *sc, t_ray ray);

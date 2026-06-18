@@ -1,6 +1,6 @@
-#include <scene.h>
-#include <mathRT.h>
-#include <RTmlx.h>
+#include "scene.h"
+#include "mathRT.h"
+#include "RTmlx.h"
 
 void	obj_rotate_up(t_scene *sc)
 {

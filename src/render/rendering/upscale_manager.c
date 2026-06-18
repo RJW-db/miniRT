@@ -1,6 +1,6 @@
-#include <RTmlx.h>
-#include <mathRT.h>
-#include <render.h>
+#include "RTmlx.h"
+#include "mathRT.h"
+#include "render.h"
 
 //	Static functions
 static void	set_shadow_gridsize(t_rt *rt, uint8_t stage);

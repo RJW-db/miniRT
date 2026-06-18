@@ -1,5 +1,5 @@
-#include <RTmlx.h>
-#include <render.h>
+#include "RTmlx.h"
+#include "render.h"
 
 void	scaled_res_set_pixel(t_window *w, uint16_t x, uint16_t y, t_vec4 color)
 {

@@ -1,5 +1,5 @@
-#include <RTmlx.h>
-#include <scene.h>
+#include "RTmlx.h"
+#include "scene.h"
 
 #define RADIUS true
 #define HEIGHT false

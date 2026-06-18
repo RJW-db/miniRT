@@ -1,13 +1,11 @@
 #ifndef RENDER_H
 # define RENDER_H
 
-# include <scene.h>
-
+# include "scene.h"
 # define RES_STEP_SIZE 1
 # define RES_RATIO_MAX 12
 # define RES_R_LOW 10
 # define RES_R_FULL 1
-
 # define SHADOW_EPSILON 1e-3F
 
 typedef enum e_intersect_types
@@ -44,12 +42,10 @@ typedef struct s_cyl_capintersect
 	float	cap_radius;
 }	t_cyl_cap;
 
-// void		set_pixel(t_window *win, uint16_t x, uint16_t y, t_vec4 color);
 void		scaled_res_set_pixel(t_window *w, uint16_t x, uint16_t y, t_vec4 color);
 void		set_pixel_multi(t_thread *th, uint16_t res_ratio, t_axis2 inp, t_vec4 color);
 
 // lighting.c
-
 t_vec4		calc_lighting(t_scene *sc, t_vec4 point, t_vec4 normal, t_vec4 obj_color);
 t_objs		*render_light(t_scene *scene, t_ray ray, float *closest_t, t_objs *closest_obj);
 

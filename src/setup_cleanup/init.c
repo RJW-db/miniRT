@@ -1,8 +1,8 @@
-#include <setup_clean.h>
-#include <render.h>
-#include <RTerror.h>
-#include <mathRT.h>
-#include <parsing.h>
+#include "parsing.h"
+#include "render.h"
+#include "mathRT.h"
+#include "RTerror.h"
+#include "setup_clean.h"
 
 #define NO_FILENAME "Give argument: ./miniRT <filename>\n"
 #define SCREEN_ERROR "Screensize is too small\n"

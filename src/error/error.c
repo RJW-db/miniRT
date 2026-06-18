@@ -1,6 +1,6 @@
 #include <stddef.h>
 #include <stdbool.h>
-#include <RTerror.h>
+#include "RTerror.h"
 
 /**
  * @brief overwrites static *(address) to errnum.

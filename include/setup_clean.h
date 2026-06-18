@@ -1,7 +1,7 @@
 #ifndef UTILS_H
 # define UTILS_H
-# include <scene.h>
-# include <RTmlx.h>
+# include "scene.h"
+# include "RTmlx.h"
 
 int32_t		cleanup(t_rt *rt);
 

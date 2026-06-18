@@ -1,4 +1,4 @@
-#include <RTmlx.h>
+#include "RTmlx.h"
 
 //	Static Functions
 static bool	init_mlx(t_window *win);

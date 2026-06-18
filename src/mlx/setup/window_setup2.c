@@ -1,4 +1,4 @@
-#include <RTmlx.h>
+#include "RTmlx.h"
 
 bool	res_setscale(t_window *win, const float scale)
 {

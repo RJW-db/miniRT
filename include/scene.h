@@ -1,9 +1,9 @@
 #ifndef SCENE_H
 # define SCENE_H
 
-# include <dbltoa.h>
+# include "dbltoa.h"
 # include "forward_declarations.h"
-# include <miniRT.h>
+# include "miniRT.h"
 
 # define RT_MAX_LINE_LEN 150
 //	3 objects, Plane Sphere Cylinder

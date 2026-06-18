@@ -1,5 +1,5 @@
-#include <scene.h>
-#include <mathRT.h>
+#include "scene.h"
+#include "mathRT.h"
 
 uint8_t	ray_intersect_plane(t_ray ray, t_objs *obj, float *t)
 {

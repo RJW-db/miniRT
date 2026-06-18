@@ -1,6 +1,6 @@
-#include <RTmlx.h>
-#include <render.h>
-#include <mathRT.h>
+#include "RTmlx.h"
+#include "render.h"
+#include "mathRT.h"
 
 void	switch_scaling_mode(t_rt *rt)
 {

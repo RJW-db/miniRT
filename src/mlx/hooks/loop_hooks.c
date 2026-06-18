@@ -1,5 +1,5 @@
-#include <RTmlx.h>
-#include <render.h>
+#include "RTmlx.h"
+#include "render.h"
 
 //	Static Functions
 static void	render_updates(t_rt *rt);

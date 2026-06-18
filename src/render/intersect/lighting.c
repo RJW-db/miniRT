@@ -1,6 +1,6 @@
-#include <scene.h>
-#include <render.h>
-#include <mathRT.h>
+#include "scene.h"
+#include "render.h"
+#include "mathRT.h"
 
 //	Static Functions
 static bool		calc_hard_shadow(t_scene *sc, t_ray ray, t_vec4 light_dir, uint32_t light);

@@ -1,5 +1,5 @@
-#include <mathRT.h>
-#include <render.h>
+#include "mathRT.h"
+#include "render.h"
 
 //	Static functions
 static t_vec4	calculate_normal(t_objs *obj, t_ray *ray, float t, uint8_t intersect_type);

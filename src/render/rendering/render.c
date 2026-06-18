@@ -1,6 +1,6 @@
-#include <RTmlx.h>
-#include <mathRT.h>
-#include <render.h>
+#include "RTmlx.h"
+#include "mathRT.h"
+#include "render.h"
 
 // Render the scene
 void	render(t_rt *rt, t_window *w)

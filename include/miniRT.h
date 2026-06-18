@@ -6,7 +6,7 @@
 # include <stdbool.h>
 # include <stdint.h>
 # include "forward_declarations.h"
-# include <threadsRT.h>
+# include "threadsRT.h"
 
 # ifndef SCREEN_WIDTH
 #  define SCREEN_WIDTH 5120

@@ -1,9 +1,9 @@
-#include <scene.h>
-#include <RTmlx.h>
-#include <mathRT.h>
-#include <render.h>
-#include <threadsRT.h>
-#include <setup_clean.h>
+#include "scene.h"
+#include "RTmlx.h"
+#include "render.h"
+#include "mathRT.h"
+#include "threadsRT.h"
+#include "setup_clean.h"
 
 //	Static functions
 static void	render_routine(t_thread *th);

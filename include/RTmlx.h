@@ -1,9 +1,9 @@
 #ifndef RTMLX_H
 # define RTMLX_H
 # include <MLX42/MLX42.h>
-# include <libftx.h> 
-# include <miniRT.h>
+# include "libftx.h" 
 # include "forward_declarations.h"
+# include "miniRT.h"
 
 # define FILE_CREATION 256	// (NAME_MAX || MAX_PATH) + 1
 # define LOGO_PATH "images/glasses.png"
@@ -11,7 +11,6 @@
 # define CAM_ROTATION_SPEED 1.0F
 # define CAM_MOVE_SPEED 12.0F
 # define FOV_SCROLL_SPEED 160.0F
-
 # define FOV_MAX 180.0F
 
 struct s_window
@@ -58,9 +57,6 @@ void	mouse_hook(mouse_key_t button, action_t action, modifier_key_t mods, t_rt *
 bool	handle_object_modification(const keys_t key, t_scene *sc);
 
 // scaling.c
-void	scaled_res_set_pixel(t_window *w, uint16_t x, uint16_t y, t_vec4 color);
-
-// scaling_resolution.c
 void	switch_scaling_mode(t_rt *rt);
 void	change_scaling_start(t_rt *rt, mlx_key_data_t keydata);
 
@@ -78,7 +74,7 @@ void	cam_rotate_left(t_scene *sc);
 void	cam_rotate_up(t_scene *sc);
 void	cam_rotate_down(t_scene *sc);
 
-
+// obj_move.c
 bool	obj_move_forw(t_scene *sc);
 bool	obj_move_backw(t_scene *sc);
 bool	obj_move_left(t_scene *sc);
@@ -86,14 +82,17 @@ bool	obj_move_right(t_scene *sc);
 bool	obj_move_up(t_scene *sc);
 bool	obj_move_down(t_scene *sc);
 
+// obj_rotate.c
 void	obj_rotate_up(t_scene *sc);
 void	obj_rotate_down(t_scene *sc);
 void	obj_rotate_left(t_scene *sc);
 void	obj_rotate_right(t_scene *sc);
 
+// filename.c
 void	set_filename(const keys_t key, t_window *win, t_scene *sc);
 void	reset_filename(t_window *win);
 
 // print_perf_stats.c
 void	switch_prt_perf_stats(t_rt *rt);
+
 #endif

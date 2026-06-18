@@ -1,5 +1,5 @@
-#include <scene.h>
-#include <RTmlx.h>
+#include "scene.h"
+#include "RTmlx.h"
 
 void	switch_prt_perf_stats(t_rt *rt)
 {

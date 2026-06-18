@@ -1,6 +1,6 @@
-#include <scene.h>
-#include <mathRT.h>
-#include <RTmlx.h>
+#include "scene.h"
+#include "mathRT.h"
+#include "RTmlx.h"
 
 bool	obj_move_forw(t_scene *sc)
 {

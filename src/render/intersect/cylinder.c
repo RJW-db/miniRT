@@ -1,6 +1,6 @@
-#include <scene.h>
-#include <render.h>
-#include <mathRT.h>
+#include "scene.h"
+#include "render.h"
+#include "mathRT.h"
 
 //	Static Function
 static bool	solve_quadratic(const float a, const float b, const float c, t_cyl *cy);

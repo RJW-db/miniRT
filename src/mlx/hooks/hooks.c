@@ -1,6 +1,6 @@
-#include <RTmlx.h>
-#include <render.h>
-#include <mathRT.h>
+#include "RTmlx.h"
+#include "render.h"
+#include "mathRT.h"
 
 //	Static Functions
 static void	closing_cleanup_threads(t_rt *rt);

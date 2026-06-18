@@ -1,5 +1,5 @@
-#include <parsing.h>
 #include <fcntl.h>
+#include "parsing.h"
 
 //	Static Functions
 static bool	init_dynarr(t_value_check *sc);

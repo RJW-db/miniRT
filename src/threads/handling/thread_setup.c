@@ -1,8 +1,8 @@
 #include <stdio.h>
-#include <threadsRT.h>
-#include <render.h>
-#include <libftx.h>
-#include <RTerror.h>
+#include "libftx.h"
+#include "render.h"
+#include "threadsRT.h"
+#include "RTerror.h"
 
 bool	initialize_mutexes(t_rt *rt)
 {
