@@ -208,7 +208,7 @@ sunshine: all
 	./$(NAME) ./scenes/sunshine.rt
 
 white: all
-	./$(NAME) ./scenes/white.rt
+	./$(NAME) ./scenes/white_spheres.rt
 
 debug: $(if $(filter-out debug,$(MAKECMDGOALS)),,all)
 
