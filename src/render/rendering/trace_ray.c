@@ -1,9 +1,12 @@
-#include <mathRT.h>
-#include <render.h>
 
-//	Static functions
-static t_vec4	calculate_normal(t_objs *obj, t_ray *ray, float t, uint8_t intersect_type);
-static t_vec4	calculate_normal_cylinder(t_objs *obj, t_ray ray, float t, uint8_t intersect_type);
+#include "scene.h"
+#include "render.h"
+#include "mathRT.h"
+
+// Static Functions
+static bool	find_closest_hit(t_scene *sc, t_ray ray, t_hit *hit);
+static bool	fill_hit_obj(t_scene *sc, t_ray ray, t_hit *hit);
+static bool	fill_hit_light(t_scene *sc, t_ray ray, t_hit *hit);
 
 uint8_t	ray_intersect_table(t_ray ray, t_objs *obj, float *t)
 {
@@ -16,98 +19,87 @@ uint8_t	ray_intersect_table(t_ray ray, t_objs *obj, float *t)
 	return (intersect_obj[obj->type](ray, obj, t));
 }
 
-uint32_t	find_closest_object(t_scene *sc, t_ray ray, float *closest_t, uint8_t *closest_intersect_type)
+t_vec4	trace_ray(t_scene *sc, t_ray ray)
 {
+	t_hit	hit;
+
+	hit = (t_hit){0};
+	hit.t = INFINITY;
+	if (!find_closest_hit(sc, ray, &hit))
+		return ((t_vec4){0.0F, 0.0F, 0.0F, 1.0F});
+	if (hit.obj->type == LIGHT)
+	{
+		if (hit.obj->u.l.visible == false)
+			return (hit.obj->color);
+		return (hit.obj->u.l.obj_color);
+	}
+	return (calc_lighting(sc, &hit));
+}
+
+uint32_t	find_closest_object(t_scene *sc, t_ray ray, float *hit_t, uint8_t *hit_type)
+{
+	uint8_t		intersect_type;
 	uint32_t	closest_obj;
 	uint32_t	i;
 	float		t;
-	uint8_t		intersect_type;
 
-	closest_obj = 0;
 	i = 0;
-	*closest_t = INFINITY;
-	*closest_intersect_type = 0;
-	while (i < sc->o_arr_size)
+	closest_obj = 0;
+	*hit_t = INFINITY;
+	*hit_type = 0;
+	while (i < sc->o.o_arr_size)
 	{
-		intersect_type = ray_intersect_table(ray, sc->objs + i, &t);
-		if (intersect_type && t < *closest_t)
+		intersect_type = ray_intersect_table(ray, sc->o.objs + i, &t);
+		if (intersect_type && t < *hit_t)
 		{
 			closest_obj = i;
-			*closest_t = t;
-			*closest_intersect_type = intersect_type;
+			*hit_t = t;
+			*hit_type = intersect_type;
 		}
 		++i;
 	}
 	return (closest_obj);
 }
 
-
-t_vec4	trace_ray(t_scene *sc, t_ray ray)
+static bool	find_closest_hit(t_scene *sc, t_ray ray, t_hit *hit)
 {
-	uint8_t	closest_intersect_type;
+	if (!fill_hit_obj(sc, ray, hit))
+		return (fill_hit_light(sc, ray, hit));
+	fill_hit_light(sc, ray, hit);
+	if (hit->t == INFINITY || hit->t <= 0.0F)
+		return (false);
+	if (hit->obj->type == LIGHT)
+		hit->color = hit->obj->u.l.obj_color;
+	else
+		hit->color = hit->obj->color;
+	return (true);
+}
+
+static bool	fill_hit_obj(t_scene *sc, t_ray ray, t_hit *hit)
+{
+	uint32_t	obj_i;
+
+	obj_i = find_closest_object(sc, ray, &hit->t, &hit->type);
+	if (hit->t == INFINITY || hit->t <= 0.0F)
+		return (false);
+	hit->obj = sc->o.objs + obj_i;
+	hit->point = vadd(ray.origin, vscale(ray.vec, hit->t));
+	hit->normal = calculate_normal(hit->obj, &ray, hit->t, hit->type);
+	return (true);
+}
+
+static bool	fill_hit_light(t_scene *sc, t_ray ray, t_hit *hit)
+{
 	t_objs	*closest_obj;
-	t_vec4	pixel_color;
-	float	closest_t;
-	t_vec4	hit_point;
+	float	hit_t;
 
-	pixel_color = (t_vec4){0.0F, 0.0F, 0.0F, 1.0F};
-	closest_obj = sc->objs + find_closest_object(sc, ray, &closest_t, &closest_intersect_type);
-	closest_obj = render_light(sc, ray, &closest_t, closest_obj);
-	if (closest_t < INFINITY && closest_t > 0.0F)
-	{
-		pixel_color = closest_obj->color;
-		if (closest_obj->type == LIGHT)
-		{
-			if (closest_obj->l.visible == false)
-				return (pixel_color);
-			return (closest_obj->l.obj_color);
-		}
-		hit_point = vadd(ray.origin, vscale(ray.vec, closest_t));
-		return (calc_lighting(sc, hit_point, \
-				calculate_normal(closest_obj, &ray, closest_t, \
-				closest_intersect_type), pixel_color));
-	}
-	return (pixel_color);
-}
-
-static t_vec4	calculate_normal(t_objs *obj, t_ray *ray, float t, uint8_t intersect_type)
-{
-	t_vec4	normal;
-
-	if (obj->type == PLANE)
-	{
-		if (vdot(obj->plane.orientation, ray->vec) > 0.0F)
-		{
-			return (vscale(obj->plane.orientation, -1.0F));
-		}
-		return (obj->plane.orientation);
-	}
-	normal = (t_vec4){0.0F, 0.0F, 0.0F, 1.0F};
-	if (obj->type == SPHERE)
-	{
-		normal = vnorm(vsub(vadd(ray->origin, vscale(ray->vec, t)), obj->coords));
-	}
-	if (obj->type == CYLINDER)
-	{
-		normal = calculate_normal_cylinder(obj, *ray, t, intersect_type);
-	}
-	if (vdot(normal, ray->vec) > 0.0F)
-		normal *= -1.0F;
-	return (normal);
-}
-
-static t_vec4	calculate_normal_cylinder(t_objs *obj, t_ray ray, float t, uint8_t intersect_type)
-{
-	const t_vec4	hit_point = vadd(ray.origin, vscale(ray.vec, t));
-	t_vec4			normal;
-
-	if (intersect_type == CYL_BODY)
-	{
-		normal = vsub(hit_point, 
-				vadd(obj->coords, 
-				vscale(obj->cylinder.orientation, 
-				vdot(vsub(hit_point, obj->coords), obj->cylinder.orientation))));
-		return (vnorm(normal));
-	}
-	return (vnorm(obj->cylinder.orientation));
+	closest_obj = hit->obj;
+	hit_t = hit->t;
+	closest_obj = render_light(sc, ray, &hit_t, closest_obj);
+	if (hit_t >= hit->t || closest_obj == hit->obj)
+		return (false);
+	hit->obj = closest_obj;
+	hit->t = hit_t;
+	hit->type = 0;
+	return (true);
 }

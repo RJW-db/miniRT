@@ -1,6 +1,6 @@
-#include <RTmlx.h>
-#include <render.h>
-#include <mathRT.h>
+#include "RTmlx.h"
+#include "render.h"
+#include "mathRT.h"
 
 //	Static Functions
 static void	closing_cleanup_threads(t_rt *rt);
@@ -8,16 +8,19 @@ static void	scene_manipulate_keys(mlx_key_data_t keydata, t_rt *rt);
 
 void	init_hooks(t_rt *rt)
 {
+	mlx_t	*mlx;
+
+	mlx = rt->win->mlx;
 	if (THREADS > 1)
 	{
-		mlx_loop_hook(rt->win->mlx, (mlx_closefunc)loop_hook_threaded, rt);
-		mlx_close_hook(rt->win->mlx, (mlx_closefunc)closing_cleanup_threads, rt);
+		mlx_loop_hook(mlx, (mlx_closefunc)loop_hook_threaded, rt);
+		mlx_close_hook(mlx, (mlx_closefunc)closing_cleanup_threads, rt);
 	}
 	else
-		mlx_loop_hook(rt->win->mlx, (mlx_closefunc)loop_hook, rt);
-	mlx_key_hook(rt->win->mlx, (mlx_keyfunc)my_keyhook, rt);
-	mlx_scroll_hook(rt->win->mlx, (mlx_cursorfunc)scroll_fov_hook, rt->scene);
-	mlx_mouse_hook(rt->win->mlx, (mlx_mousefunc)mouse_hook, rt);
+		mlx_loop_hook(mlx, (mlx_closefunc)loop_hook, rt);
+	mlx_key_hook(mlx, (mlx_keyfunc)my_keyhook, rt);
+	mlx_scroll_hook(mlx, (mlx_cursorfunc)scroll_fov_hook, rt->scene);
+	mlx_mouse_hook(mlx, (mlx_mousefunc)mouse_hook, rt);
 	reset_filename(rt->win);
 }
 
@@ -47,50 +50,44 @@ void	my_keyhook(mlx_key_data_t keydata, t_rt *rt)
 
 void	brightness_keys(mlx_key_data_t keydata, t_rt *rt)
 {
-	float		upl;
-	float		dol;
-	const float	upa = rt->scene->ambient.a.ratio + 0.05F;
-	const float	doa = rt->scene->ambient.a.ratio - 0.05F;
+	t_scene	*sc;
+	float	step;
+	float	val;
 
-	if (keydata.key == MLX_KEY_EQUAL)
+	if (keydata.key != MLX_KEY_EQUAL && keydata.key != MLX_KEY_MINUS)
+		return ;
+	sc = rt->scene;
+	step = 0.05F;
+	if (keydata.key == MLX_KEY_MINUS)
+		step = -step;
+	if (sc->selected_obj != NULL && sc->selected_obj->type == LIGHT)
 	{
-		if (rt->scene->selected_obj != NULL && rt->scene->selected_obj->type == LIGHT)
-		{
-			upl = rt->scene->selected_obj->l.brightness + 0.05F;
-			rt->scene->selected_obj->l.brightness = clamp(upl, 0.0F, 1.0F);
-		}
-		else
-			rt->scene->ambient.a.ratio = clamp(upa, 0.0F, 1.0F);
-		rt->scene->render = true;
+		val = sc->selected_obj->u.l.brightness + step;
+		sc->selected_obj->u.l.brightness = clamp(val, 0.0F, 1.0F);
 	}
-	else if (keydata.key == MLX_KEY_MINUS)
+	else
 	{
-		if (rt->scene->selected_obj != NULL && rt->scene->selected_obj->type == LIGHT)
-		{
-			dol = rt->scene->selected_obj->l.brightness - 0.05F;
-			rt->scene->selected_obj->l.brightness = clamp(dol, 0.0F, 1.0F);
-		}
-		else
-			rt->scene->ambient.a.ratio = clamp(doa, 0.0F, 1.0F);
-		rt->scene->render = true;
+		val = sc->ambient.u.a.ratio + step;
+		sc->ambient.u.a.ratio = clamp(val, 0.0F, 1.0F);
 	}
+	sc->render = true;
 }
 
 static void	scene_manipulate_keys(mlx_key_data_t keydata, t_rt *rt)
 {
-	uint16_t	index;
+	uint16_t	idx;
 	t_objs		*light;
 
 	if (handle_object_modification(keydata.key, rt->scene) == true)
 		rt->scene->render = true;
 	else if (keydata.key == MLX_KEY_L)
 	{
-		light = rt->scene->lights;
-		index = 0;
-		while (index < rt->scene->l_arr_size)
+		light = rt->scene->l.lights;
+		idx = 0;
+		while (idx < rt->scene->l.l_arr_size)
 		{
-			light[index].l.intersect_lights = !light[index].l.intersect_lights;
-			++index;
+			light[idx].u.l.intersect_lights = !light[idx].u.l.intersect_lights;
+			++idx;
 		}
 		rt->scene->render = true;
 	}

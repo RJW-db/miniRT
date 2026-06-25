@@ -1,11 +1,10 @@
-#include <scene.h>
-#include <RTmlx.h>
-#include <mathRT.h>
-#include <render.h>
-#include <threadsRT.h>
-#include <setup_clean.h>
 #include <limits.h>
-#include <dbltoa.h>
+#include "scene.h"
+#include "RTmlx.h"
+#include "render.h"
+#include "mathRT.h"
+#include "threadsRT.h"
+#include "setup_clean.h"
 
 //	Static Functions
 static int	powi(int base, int pow);
@@ -23,8 +22,8 @@ void	print_performance_stats(t_rt *rt, float fps)
 
 	fps_average += fps;
 	++counter;
-	if (rt->win->res_ratio == rt->win->res_r_start \
-		&& cur_time < last_print_time + 0.3)
+	if (rt->win->res_ratio == rt->win->res_r_start &&
+		cur_time < last_print_time + 0.3)
 		return ;
 	last_print_time = cur_time;
 	if (rt->win->prt_perf_stats == true)
@@ -74,13 +73,13 @@ static char	*itoa_simple(int num, char *buffer)
 	else
 		n = (uint32_t)num;
 	len = 1;
-	while (n / powi(10, len) != 0)
+	while (n / (uint32_t)powi(10, (int)len) != 0)
 		++len;
 	i += len;
 	len = i;
 	while (i > 0)
 	{
-		buffer[--i] = '0' + n % 10;
+		buffer[--i] = (char)('0' + n % 10);
 		n /= 10;
 	}
 	return (buffer + len);
@@ -99,24 +98,24 @@ static int	powi(int base, int pow)
 // Min precicion = 1, max = 255.
 static char	*ftoa_simple(float num, char *buffer, uint8_t prec)
 {
+	float	fraction;
 	int		int_part;
 	int		digit;
 	size_t	i;
-	float	frac;
 
 	if (!buffer || prec < 1)
 		return (buffer);
 	int_part = (int)num;
-	frac = fabsf(num - int_part);
+	fraction = fabsf(num - (float)int_part);
 	buffer = itoa_simple(int_part, buffer);
 	*(buffer++) = '.';
 	i = 0;
 	while (i < prec)
 	{
-		frac *= 10;
-		digit = (int)frac;
-		buffer[i++] = '0' + digit;
-		frac -= digit;
+		fraction *= 10;
+		digit = (int)fraction;
+		buffer[i++] = (char)('0' + digit);
+		fraction -= (float)digit;
 	}
 	return (buffer[i] = '\0', buffer + i);
 }

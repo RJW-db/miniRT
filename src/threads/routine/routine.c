@@ -1,9 +1,9 @@
-#include <scene.h>
-#include <RTmlx.h>
-#include <mathRT.h>
-#include <render.h>
-#include <threadsRT.h>
-#include <setup_clean.h>
+#include "scene.h"
+#include "RTmlx.h"
+#include "render.h"
+#include "mathRT.h"
+#include "threadsRT.h"
+#include "setup_clean.h"
 
 //	Static functions
 static void	render_routine(t_thread *th);
@@ -28,16 +28,16 @@ static void	render_routine(t_thread *th)
 		{
 			thread_fast_render(th, th->rt->win);
 			time = mlx_get_time() - time;
-			th->win->delta_time = time;
+			th->win->delta_time = (float)time;
 		}
 		else if (thread_render(th, th->rt->win) == false)
 		{
 			time = mlx_get_time() - time;
-			if (th->win->res_ratio == th->win->res_r_start - 1 \
-				&& check_bool(th->rt->mtx + MTX_SWITCH_BOOL, th->rt->win->auto_res))
+			if (th->win->res_ratio == th->win->res_r_start - 1 &&
+				check_bool(th->rt->mtx + MTX_SWITCH_BOOL, th->rt->win->auto_res))
 				set_starting_res_ratio(th->rt, time);
 		}
-		print_performance_stats(th->rt, 1.0F / time);
+		print_performance_stats(th->rt, (float)(1.0 / time));
 		resynchronize_after_rendering(th);
 	}
 	pthread_mutex_lock(th->rt->mtx + MTX_STOPPED_THREADS);

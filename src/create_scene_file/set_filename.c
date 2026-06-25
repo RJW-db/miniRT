@@ -1,5 +1,5 @@
-#include <scene.h>
-#include <RTmlx.h>
+#include "scene.h"
+#include "RTmlx.h"
 
 //	Static Function
 static void	update_filename_input(const keys_t key, t_window *win);
@@ -21,9 +21,8 @@ void	set_filename(const keys_t key, t_window *win, t_scene *sc)
 		if (ft_strncmp(win->filename, NAME_FILE, sizeof(NAME_FILE)) != 0)
 		{
 			create_scene_rt_file(sc, win->filename + (sizeof(NAME_FILE) - 1));
-			cpy_str(win->filename + 6, "Created file: ");
+			cpy_str0(win->filename + 6, "Created file: ");
 			win->filename[sizeof(NAME_FILE) - 2] = ' ';
-			// mlx_set_window_title(win->mlx, win->filename + 6);
 		}
 		mlx_set_window_title(win->mlx, "miniRT");
 		reset_filename(win);
@@ -34,7 +33,7 @@ void	set_filename(const keys_t key, t_window *win, t_scene *sc)
 
 void	reset_filename(t_window *win)
 {
-	win->filename_len = cpy_str(win->filename, NAME_FILE);
+	win->filename_len = (uint16_t)cpy_str0(win->filename, NAME_FILE);
 	win->file_creation = false;
 }
 
@@ -53,7 +52,10 @@ static void	update_filename_input(const keys_t key, t_window *win)
 			win->filename[win->filename_len] = '\0';
 		}
 		else
-			return (mlx_set_window_title(win->mlx, "Filename too long."));
+		{
+			mlx_set_window_title(win->mlx, "Filename too long.");
+			return ;
+		}
 	}
 	mlx_set_window_title(win->mlx, win->filename);
 }

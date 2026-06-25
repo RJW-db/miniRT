@@ -1,5 +1,5 @@
-#include <RTmlx.h>
-#include <render.h>
+#include "RTmlx.h"
+#include "render.h"
 
 //	Static Functions
 static void	render_updates(t_rt *rt);
@@ -8,26 +8,28 @@ static void	last_pix_arr_switch(t_rt *rt);
 
 void	loop_hook(t_rt *rt)
 {
-	double	time;
+	t_camera	*camera;
+	t_window	*win;
+	double		time;
 
 	time = mlx_get_time();
 	movement(rt);
-	if (rt->scene->render == true || rt->scene->render_ongoing == true)
-	{
-		if (rt->scene->render == true && rt->win->auto_res == false)
-			rt->win->res_r_start = rt->win->man_r_start;
-		upscale_manager(rt);
-		time = mlx_get_time() - time;
-		if (rt->win->res_ratio == rt->win->res_r_start)
-			rt->win->delta_time = time;
-		else if (rt->win->res_ratio == rt->win->res_r_start - 1 \
-				&& rt->win->auto_res == true)
-			set_starting_res_ratio(rt, time);
-		rt->scene->camera.c.cam_fov_speed = FOV_SCROLL_SPEED * rt->win->delta_time;
-		rt->scene->camera.c.cam_m_speed = CAM_MOVE_SPEED * rt->win->delta_time;
-		rt->scene->camera.c.cam_r_speed = CAM_ROTATION_SPEED * rt->win->delta_time;
-		rt->scene->render = false;
-	}
+	if (rt->scene->render == false && rt->scene->render_ongoing == false)
+		return ;
+	win = rt->win;
+	if (rt->scene->render == true && win->auto_res == false)
+		win->res_r_start = win->man_r_start;
+	upscale_manager(rt);
+	time = mlx_get_time() - time;
+	if (win->res_ratio == win->res_r_start)
+		win->delta_time = (float)time;
+	else if (win->res_ratio == win->res_r_start - 1 && win->auto_res == true)
+		set_starting_res_ratio(rt, time);
+	camera = &rt->scene->camera.u.c;
+	camera->cam_fov_speed = FOV_SCROLL_SPEED * win->delta_time;
+	camera->cam_m_speed = CAM_MOVE_SPEED * win->delta_time;
+	camera->cam_r_speed = CAM_ROTATION_SPEED * win->delta_time;
+	rt->scene->render = false;
 }
 
 void	loop_hook_threaded(t_rt *rt)
@@ -57,17 +59,20 @@ void	loop_hook_threaded(t_rt *rt)
 
 static void	render_updates(t_rt *rt)
 {
-	if (rt->scene->render == true)
+	t_scene	*sc;
+
+	sc = rt->scene;
+	if (sc->render == true)
 	{
 		cpy_scene(rt->scene, rt->read_scene);
 		if (rt->win->auto_res == false)
 			rt->win->res_r_start = rt->win->man_r_start;
 	}
 	upscale_manager_thread(rt);
-	rt->scene->camera.c.cam_fov_speed = FOV_SCROLL_SPEED * rt->win->delta_time;
-	rt->scene->camera.c.cam_m_speed = CAM_MOVE_SPEED * rt->win->delta_time;
-	rt->scene->camera.c.cam_r_speed = CAM_ROTATION_SPEED * rt->win->delta_time;
-	rt->scene->render = false;
+	sc->camera.u.c.cam_fov_speed = FOV_SCROLL_SPEED * rt->win->delta_time;
+	sc->camera.u.c.cam_m_speed = CAM_MOVE_SPEED * rt->win->delta_time;
+	sc->camera.u.c.cam_r_speed = CAM_ROTATION_SPEED * rt->win->delta_time;
+	sc->render = false;
 }
 
 static void	switch_pixelarray(t_rt *rt)
@@ -87,21 +92,24 @@ static void	switch_pixelarray(t_rt *rt)
 static void	last_pix_arr_switch(t_rt *rt)
 {
 	static bool	switch_it = false;
+	const char	*title = "miniRT is upsampling shadows (can take minutes)";
 
 	pthread_mutex_lock(rt->mtx + MTX_DONE_RENDERING);
 	if (rt->scene->render == true)
 	{
 		switch_it = false;
 	}
-	else if (rt->scene->render == false && rt->scene->render_ongoing == true \
-			&& rt->win->res_ratio == RES_R_FULL)
+	else if (rt->scene->render == false
+		&& rt->scene->render_ongoing == true
+		&& rt->win->res_ratio == RES_R_FULL)
 	{
 		if (rt->scene->soft_shadows == true)
-			mlx_set_window_title(rt->win->mlx, "miniRT is upsampling shadows (can take minutes)");
+			mlx_set_window_title(rt->win->mlx, title);
 		switch_it = true;
 	}
-	else if (switch_it == true && rt->scene->render_ongoing == false \
-			&& rt->finished_rendering == THREADS - 1)
+	else if (switch_it == true
+		&& rt->scene->render_ongoing == false
+		&& rt->finished_rendering == THREADS - 1)
 	{
 		mlx_set_window_title(rt->win->mlx, "miniRT");
 		switch_pixelarray(rt);

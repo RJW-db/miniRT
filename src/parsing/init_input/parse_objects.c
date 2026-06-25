@@ -1,5 +1,5 @@
-#include <parsing.h>
-#include <mathRT.h>
+#include "parsing.h"
+#include "mathRT.h"
 
 //	Static Functions
 static bool	parse_amb(t_objs *ambient, t_value_check *vc, char *line);
@@ -21,27 +21,33 @@ bool	input_type_parse(t_scene *sc, t_value_check *vc, char *line)
 static bool	parse_amb(t_objs *ambient, t_value_check *vc, char *line)
 {
 	ambient->type = AMBIENT;
-	ambient->a.ratio = rt_atof(line);
-	if ((ambient->a.ratio < 0.0F || ambient->a.ratio > 1.0F) ||
-	validate_and_normalize_color(&ambient->color, &line) == false)
+	ambient->u.a.ratio = rt_atof(line);
+	if ((ambient->u.a.ratio < 0.0F || ambient->u.a.ratio > 1.0F) ||
+		validate_and_normalize_color(&ambient->color, &line) == false)
+	{
 		return (errset(perr("parse_amb", ERRFORM)), EXIT_FAILURE);
+	}
 	++vc->amb_amount;
 	return (EXIT_SUCCESS);
 }
 
-
 static bool	parse_cam(t_objs *camera, t_value_check *vc, char *line)
 {
+	int32_t	fov;
+	float	fov_radius;
+
 	camera->coords[X] = rt_atof(line);
 	camera->coords[Y] = rt_atof(nxtvp(&line));
 	camera->coords[Z] = rt_atof(nxtvp(&line));
-	if (validate_orientation(&camera->c.orientation, &line) == false)
+	if (validate_orientation(&camera->u.c.orientation, &line) == false)
 		return (errset(perr("parse_cam", ERRFORM)), EXIT_FAILURE);
-	camera->c.orientation = vnorm(camera->c.orientation);
-	camera->c.fov = atoi32(nxtvp(&line));
-	if (camera->c.fov < 0 || camera->c.fov > 180)
+	camera->u.c.orientation = vnorm(camera->u.c.orientation);
+	fov = atoi32(nxtvp(&line));
+	camera->u.c.fov = (float)fov;
+	if (camera->u.c.fov < 0 || camera->u.c.fov > 180)
 		return (errset(perr("parse_cam", ERRFORM)), EXIT_FAILURE);
-	camera->c.zvp_dist = 1.0F / tanf((camera->c.fov * M_PI / 180.0F) / 2.0F);
+	fov_radius = camera->u.c.fov * (float)M_PI / 180.0F;
+	camera->u.c.zvp_dist = 1.0F / tanf(fov_radius / 2.0F);
 	++vc->cam_amount;
 	return (EXIT_SUCCESS);
 }
@@ -49,18 +55,21 @@ static bool	parse_cam(t_objs *camera, t_value_check *vc, char *line)
 static bool	parse_light(t_value_check *vc, char *line)
 {
 	t_objs	l;
+
 	l.type = LIGHT;
 	l.coords[X] = rt_atof(line);
 	l.coords[Y] = rt_atof(nxtvp(&line));
 	l.coords[Z] = rt_atof(nxtvp(&line));
 	l.coords[W] = 1.0F;
-	l.l.brightness = rt_atof(nxtvp(&line));
-	if ((l.l.brightness < 0.0F || l.l.brightness > 1.0F) ||
-	validate_and_normalize_color(&l.color, &line) == false)
+	l.u.l.brightness = rt_atof(nxtvp(&line));
+	if ((l.u.l.brightness < 0.0F || l.u.l.brightness > 1.0F) ||
+		validate_and_normalize_color(&l.color, &line) == false)
+	{
 		return (errset(perr("parse_light", ERRFORM)), EXIT_FAILURE);
-	l.l.radius = 1.5F;
-	l.l.intersect_lights = false;
-	l.l.visible = false;
+	}
+	l.u.l.radius = 1.5F;
+	l.u.l.intersect_lights = false;
+	l.u.l.visible = false;
 	if (parse_light_extra(&l, &line) == false)
 		return (errset(perr("parse_light", ERRFORM)), EXIT_FAILURE);
 	if (dynarr_insert(&vc->light_dynarr, &l) == false)
@@ -76,10 +85,13 @@ static bool	parse_light_extra(t_objs *l, char **line)
 		++(*line);
 	if (ft_isnum(*line) == true)
 	{
-		l->l.radius = rt_atof(*line);
-		if (l->l.radius < 0 || validate_and_normalize_color(&l->l.obj_color, line) == false)
+		l->u.l.radius = rt_atof(*line);
+		if (l->u.l.radius < 0 ||
+			validate_and_normalize_color(&l->u.l.obj_color, line) == false)
+		{
 			return (false);
-		l->l.visible = true;
+		}
+		l->u.l.visible = true;
 	}
 	return (true);
 }

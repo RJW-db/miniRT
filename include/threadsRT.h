@@ -1,23 +1,14 @@
 #ifndef THREADSRT_H
 # define THREADSRT_H
 
-# include <common_defs.h>
-# include <pthread.h>
+# include <stdbool.h>
+# include <stdint.h>
+# include <MLX42/MLX42.h>
+# include "forward_declarations.h"
 
 # define PRT_BUFFER_SIZE 64
 
-typedef float				t_vec4 __attribute__ ((vector_size(16)));
-
-//	Forward declaration of structs;
-typedef struct s_scene		t_scene;
-typedef struct s_window		t_window;
-typedef struct mlx			mlx_t;
-typedef struct mlx_texture	mlx_texture_t;
-typedef struct mlx_image	mlx_image_t;
-typedef struct s_rt			t_rt;
-
-typedef pthread_mutex_t		t_mtx;
-typedef void				*(*t_cast)(void *);
+typedef float	t_vec4 __attribute__ ((vector_size(16)));
 
 enum e_mtx
 {
@@ -32,7 +23,7 @@ enum e_mtx
 	MTX_AMOUNT
 };
 
-typedef struct	s_thread
+typedef struct s_thread
 {
 	t_rt			*rt;
 	t_scene			*scene;
@@ -44,7 +35,6 @@ typedef struct	s_thread
 	pthread_t		thread;
 }	t_thread;
 
-
 bool	res_setscale(t_window *win, const float scale);
 void	print_performance_stats(t_rt *rt, float fps);
 
@@ -55,7 +45,7 @@ void	destroy_threads(t_rt *rt);
 bool	destroy_conditions(t_rt *rt);
 void	destroy_mutexes(t_rt *rt, size_t amount);
 
-bool	img_multithreaded(t_rt *rt);
+bool	img_multithreaded(t_rt *rt, mlx_t *mlx, t_thread *thread);
 void	*thread_routine_init(t_thread *th);
 
 bool	check_bool(t_mtx *mutex, bool to_check);

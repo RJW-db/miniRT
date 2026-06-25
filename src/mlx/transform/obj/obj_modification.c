@@ -1,5 +1,5 @@
-#include <RTmlx.h>
-#include <scene.h>
+#include "RTmlx.h"
+#include "scene.h"
 
 #define RADIUS true
 #define HEIGHT false
@@ -36,67 +36,74 @@ static void	select_obj_left(t_scene *sc)
 	ssize_t	index;
 
 	index = sc->sel_obj_index - 1;
-	while (index >= 0 && sc->objs[index].type == PLANE)
+	while (index >= 0 && sc->o.objs[index].type == PLANE)
 		--index;
 	if (index < 0)
 	{
-		index = sc->o_arr_size - 1;
-		while (index >= 0 && sc->objs[index].type == PLANE)
+		index = (ssize_t)(sc->o.o_arr_size - 1);
+		while (index >= 0 && sc->o.objs[index].type == PLANE)
 			--index;
 		if (index < 0)
 			return ;
 	}
-	sc->selected_obj = sc->objs + index;
+	sc->selected_obj = sc->o.objs + index;
 	sc->sel_obj_index = index;
 }
 
 static void	select_obj_right(t_scene *sc)
 {
+	ssize_t	obj_arr_size;
 	ssize_t	index;
 
 	index = sc->sel_obj_index + 1;
-	while (index < (ssize_t)sc->o_arr_size && sc->objs[index].type == PLANE)
+	obj_arr_size = (ssize_t)sc->o.o_arr_size;
+	while (index < obj_arr_size && sc->o.objs[index].type == PLANE)
 		++index;
-	if (index >= (ssize_t)sc->o_arr_size)
+	if (index >= obj_arr_size)
 	{
 		index = 0;
-		while (index < (ssize_t)sc->o_arr_size && sc->objs[index].type == PLANE)
+		while (index < obj_arr_size && sc->o.objs[index].type == PLANE)
 			++index;
-		if (index >= (ssize_t)sc->o_arr_size)
+		if (index >= obj_arr_size)
 			return ;
 	}
-	sc->selected_obj = sc->objs + index;
+	sc->selected_obj = sc->o.objs + index;
 	sc->sel_obj_index = index;
 }
 
 static bool	increase_obj(t_objs *selected_obj, bool radius_or_height)
 {
-	if (selected_obj != NULL)
-	{
-		if (selected_obj->type == SPHERE)
-			selected_obj->sphere.radius *= 1.1F;
-		else if (selected_obj->type == LIGHT)
-			selected_obj->l.radius *= 1.1F;
-		else if (radius_or_height == RADIUS)
-			selected_obj->cylinder.radius *= 1.1F;
-		else if (radius_or_height == HEIGHT)
-			selected_obj->cylinder.height *= 1.1F;
-		return (true);
-	}
-	return (false);
+	if (selected_obj == NULL)
+		return (false);
+	if (selected_obj->type == SPHERE)
+		selected_obj->u.sphere.radius *= 1.1F;
+	else if (selected_obj->type == LIGHT)
+		selected_obj->u.l.radius *= 1.1F;
+	else if (radius_or_height == RADIUS)
+		selected_obj->u.cylinder.radius *= 1.1F;
+	else if (radius_or_height == HEIGHT)
+		selected_obj->u.cylinder.height *= 1.1F;
+	else
+		return (false);
+	return (true);
 }
 
 static bool	decrease_obj(t_objs *selected_obj, bool radius_or_height)
 {
+	union u_union	*obj_data;
+
 	if (selected_obj == NULL)
 		return (false);
-	if (selected_obj->type == SPHERE && selected_obj->sphere.radius > 0.01F)
-		selected_obj->sphere.radius /= 1.1F;
-	else if (selected_obj->type == LIGHT && selected_obj->sphere.radius > 0.01F)
-		selected_obj->l.radius /= 1.1F;
-	else if (radius_or_height == RADIUS && selected_obj->cylinder.radius > 0.01F)
-		selected_obj->cylinder.radius /= 1.1F;
-	else if (radius_or_height == HEIGHT && selected_obj->cylinder.height > 0.01F)
-		selected_obj->cylinder.height /= 1.1F;
+	obj_data = &selected_obj->u;
+	if (selected_obj->type == SPHERE && obj_data->sphere.radius > 0.01F)
+		obj_data->sphere.radius /= 1.1F;
+	else if (selected_obj->type == LIGHT && obj_data->l.radius > 0.01F)
+		obj_data->l.radius /= 1.1F;
+	else if (radius_or_height == RADIUS && obj_data->cylinder.radius > 0.01F)
+		obj_data->cylinder.radius /= 1.1F;
+	else if (radius_or_height == HEIGHT && obj_data->cylinder.height > 0.01F)
+		obj_data->cylinder.height /= 1.1F;
+	else
+		return (false);
 	return (true);
 }

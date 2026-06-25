@@ -1,8 +1,9 @@
 #ifndef SCENE_H
 # define SCENE_H
 
-# include <dbltoa.h>
-# include <miniRT.h>
+# include "dbltoa.h"
+# include "forward_declarations.h"
+# include "miniRT.h"
 
 # define RT_MAX_LINE_LEN 150
 //	3 objects, Plane Sphere Cylinder
@@ -59,18 +60,18 @@ typedef enum e_obj_types
 	AMBIENT
 }	t_obj_type;
 
-typedef struct	s_plane
+typedef struct s_plane
 {
 	t_vec4	orientation;
 }	t_plane;
 
-typedef struct	s_sphere
+typedef struct s_sphere
 {
 	float	radius;
 	float	diameter;
 }	t_sphere;
 
-typedef struct	s_cylinder
+typedef struct s_cylinder
 {
 	t_vec4	orientation;
 	float	radius;
@@ -78,7 +79,7 @@ typedef struct	s_cylinder
 	float	height;
 }	t_cylinder;
 
-typedef struct	s_camera
+typedef struct s_camera
 {
 	t_vec4	orientation;
 	float	fov;
@@ -88,10 +89,10 @@ typedef struct	s_camera
 	float	cam_fov_speed;
 }	t_camera;
 
-typedef struct	s_objs
+typedef struct s_objs
 {
 	t_obj_type		type;
-	union
+	union u_union
 	{
 		t_camera	c;
 		t_amblight	a;
@@ -100,36 +101,36 @@ typedef struct	s_objs
 		t_plane		plane;
 		t_sphere	sphere;
 		t_cylinder	cylinder;
-	};
+	}	u;
 	t_vec4			coords;
 	t_vec4			color;
 }	t_objs;
 
-typedef struct	s_scene
+struct	s_scene
 {
 	bool		render;
 	bool		render_ongoing;
 	t_objs		camera;
 	t_objs		ambient;
-	struct
+	struct s_objs_arr
 	{
 		t_objs		*objs;
 		size_t		o_arr_size;	
-	};
-	struct
+	}	o;
+	struct s_lights_arr
 	{
 		t_objs		*lights;
 		size_t		l_arr_size;
-	};
+	}	l;
 	t_objs		*selected_obj;
 	ssize_t		sel_obj_index;
 	bool		soft_shadows;
 	uint16_t	shadow_grsize;
-}	t_scene;
+};
 
 void	create_scene_rt_file(t_scene *sc, const char *filename);
-size_t	color_line(t_dbltoa *dbl, char *rt_line, t_vec4 color);
-size_t	coords_line(t_dbltoa *dbl, char *rt_line, t_vec4 coords);
+size_t	color_line(t_dbltoa *dbl, char *buf, t_vec4 color);
+size_t	coords_line(t_dbltoa *dbl, char *buf, t_vec4 coords);
 
 void	ambient_line(t_objs *ambient, t_dbltoa *dbl, int fd);
 void	camera_line(t_objs *camera, t_dbltoa *dbl, int fd);
@@ -139,4 +140,5 @@ void	objs_line(t_objs *objs, size_t amount, t_dbltoa *dbl, int fd);
 
 void	print_obj_info(t_scene *sc);
 void	geometric_primitives(t_objs *obj);
+
 #endif

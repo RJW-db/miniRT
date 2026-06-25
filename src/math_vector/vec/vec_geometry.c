@@ -1,5 +1,5 @@
-#include <scene.h>
-#include <mathRT.h>
+#include "scene.h"
+#include "mathRT.h"
 
 // Vector cross-product.
 t_vec4	vcross(t_vec4 a, t_vec4 b)

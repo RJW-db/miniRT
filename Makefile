@@ -1,77 +1,116 @@
 NAME			:=	miniRT
 
-#	Get the number of logical processors (threads)
-OS				:=	$(shell uname -s)
-ifeq ($(OS), Linux)
-	N_JOBS		:=	$(shell nproc)
-else ifeq ($(OS), Darwin)
-	N_JOBS		:=	$(shell sysctl -n hw.logicalcpu)
-else
-	N_JOBS		:=	1
-endif
-
-#	(-j) Specify the number of jobs (commands) to run simultaneously
-MULTI_THREADED	:=	-j$(N_JOBS)
-
-#	MAKEFLAGS will automatically apply the specified options (e.g., parallel execution) when 'make' is invoked
-MAKEFLAGS		+=	$(MULTI_THREADED)
-
-RM				:=	rm -rf
-PRINT_NO_DIR	:=	--no-print-directory
-
-#		CFLAGS for testing
+MAKEFLAGS		+=	-j
 COMPILER		:=	cc
-CFLAGS			+=	-Wall -Wextra
-CFLAGS			+=	-Werror
-CFLAGS			+=	-MMD -MP
-CFLAGS			+=	-g
-#		Werror cannot go together with fsanitize, because fsanitize won't work correctly.
-# CFLAGS			+=	-fsanitize=address
 
-#		Temporary CFLAGS
-CFLAGS			+=	-pthread -D THREADS=$(if $(filter-out 1,$(N_JOBS)),2,1)
-#		Optimization flags
-OFLAGS			=	-O2
-# 		Generate code optimized for the host machine's CPU
-OFLAGS			+=	-march=native
-#		Disable setting errno after math functions for better performance
-OFLAGS			+=	-fno-math-errno
-#		This flag allows the compiler to use reciprocal approximations for division operations, which can improve performance but may reduce precision.
-OFLAGS			+=	-freciprocal-math
-#		This flag allows the compiler to ignore the distinction between positive and negative zero, which can enable more aggressive optimizations.
-OFLAGS			+=	-fno-signed-zeros
-#		This flag tells the compiler that floating-point operations cannot generate traps (such as overflow or division by zero), allowing for more aggressive optimizations.
-OFLAGS			+=	-fno-trapping-math
+BASE_FLAGS		:=	-std=c99 -Wall -Wextra -Werror
+PEDANTIC		:=	-Wpedantic -pedantic-errors -Wundef -Wstrict-prototypes
+WARNINGS		:=	-Wshadow -Wconversion -Wsign-conversion			\
+					-Wformat=2 -Wuninitialized -Wunreachable-code
 
-# Detect screen resolution
-ifeq ($(OS), Linux)
-    SCREEN_RES	:=	$(shell xrandr 2>/dev/null | grep '*' | uniq | awk '{print $$1}' | head -1)
-    OFLAGS		+=	-fsingle-precision-constant -flto=auto -fuse-linker-plugin
-else ifeq ($(OS), Darwin)
-    SCREEN_RES	:=	$(shell system_profiler SPDisplaysDataType 2>/dev/null | grep Resolution | head -n 1 | awk '{print $$2"x"$$4}')
-    OFLAGS		+=	-flto
+IS_CLANG		:=	$(shell $(COMPILER) --version | grep -qi clang && echo 1 || echo 0)
+IS_GCC			:=	$(shell $(COMPILER) --version | grep -qi gcc && echo 1 || echo 0)
+
+CAST_WARNINGS	:=	-Wbad-function-cast
+ifeq ($(IS_GCC),1)
+CAST_WARNINGS	+=	-Wcast-function-type
 endif
 
-# Fallback to default resolution if detection failed
+DEPFLAGS		:=	-MMD -MP
+
+OPTIMIZATION	:=	-O2 -march=native -fno-math-errno				\
+					-freciprocal-math -fno-signed-zeros				\
+					-fno-trapping-math
+SECURITY		:=	-fstack-protector-strong
+THREAD_FLAGS	:=	-pthread
+N_JOBS			:=	$(shell nproc || sysctl -n hw.logicalcpu || echo 1)
+THREADS			:=	$(if $(filter-out 1,$(N_JOBS)),2,1)
+
+OS				:=	$(shell uname -s)
+
+ifeq ($(IS_GCC),1)
+OPTIMIZATION	+=	-fsingle-precision-constant -flto=auto -fuse-linker-plugin
+endif
+
+ifeq ($(IS_CLANG),1)
+FSANITIZE		:=	feq ($(IS_CLANG),1)
+OPTIMIZATION	+=	-flto=thin
+endif
+
+ifeq ($(OS),Linux)
+SECURITY		+=	-D_FORTIFY_SOURCE=2
+FSANITIZE		:=	leak,
+endif
+
+SANITIZERS		:=	-fsanitize=$(FSANITIZE)address,undefined
+DEBUG_FLAGS		:=	-fno-omit-frame-pointer
+
+SCREEN_RES		:=	1920x1080
+ifeq ($(OS),Linux)
+SCREEN_RES		:=	$(shell xrandr 2>/dev/null | grep '*' | uniq | awk '{print $$1}' | head -1)
+else ifeq ($(OS),Darwin)
+SCREEN_RES		:=	$(shell system_profiler SPDisplaysDataType 2>/dev/null | grep Resolution | head -n 1 | awk '{print $$2"x"$$4}')
+endif
+
 ifeq ($(SCREEN_RES),)
-    SCREEN_RES	:=	1920x1080
+SCREEN_RES		:=	1920x1080
 endif
 
 SCREEN_WIDTH	:=	$(shell echo $(SCREEN_RES) | cut -d 'x' -f 1)
 SCREEN_HEIGHT	:=	$(shell echo $(SCREEN_RES) | cut -d 'x' -f 2)
-CFLAGS			+=	$(OFLAGS)
-CFLAGS			+=	-D SCREEN_WIDTH=$(SCREEN_WIDTH) -D SCREEN_HEIGHT=$(SCREEN_HEIGHT)
 
-#		Directories
-BUILD_DIR		:=	.build/
-INCD			:=	include/
-#		Extern Libaries Directories
-EXTERN_LIBS		:=	extern_libraries/
-LIBFT_DIR		:=	$(EXTERN_LIBS)libft/
-MLX42_PATH		:=	$(EXTERN_LIBS)MLX42/
+CFLAGS			:=	$(BASE_FLAGS) $(PEDANTIC) $(WARNINGS) $(CAST_WARNINGS)	\
+					$(DEPFLAGS) $(OPTIMIZATION) $(SECURITY) $(THREAD_FLAGS)	\
+					-DTHREADS=$(THREADS)									\
+					-DSCREEN_WIDTH=$(SCREEN_WIDTH)							\
+					-DSCREEN_HEIGHT=$(SCREEN_HEIGHT)
 
-#		SOURCE FILES
-SRC_DIR			:=	src/
+ifneq ($(filter valgrind,$(MAKECMDGOALS)),)
+CFLAGS			+=	-g $(DEBUG_FLAGS)
+else ifneq ($(filter debug,$(MAKECMDGOALS)),)
+CFLAGS			+=	-g3 $(SANITIZERS) $(DEBUG_FLAGS) -fno-sanitize-recover=all
+endif
+
+PRINT_NO_DIR	:=	--no-print-directory
+RM				:=	rm -rf
+
+# MLX42 flags
+ifeq ($(OS),Darwin)
+GLFW_PREFIX		:=	$(shell brew --prefix glfw 2>/dev/null)
+MLX_LINK		:=	-lglfw -L$(GLFW_PREFIX)/lib
+else
+MLX_LINK		:=	-lglfw -lm -ldl -lpthread
+endif
+
+PRINT_NO_DIR	:=	--no-print-directory
+RM				:=	rm -rf
+
+# MLX42
+ifeq ($(OS),Darwin)
+GLFW_PREFIX		:=	$(shell brew --prefix glfw 2>/dev/null)
+MLX_LINK		:=	-lglfw -L$(GLFW_PREFIX)/lib
+else
+MLX_LINK		:=	-lglfw -lm -ldl -lpthread
+endif
+
+# Directories
+INC_DIR			:=	include
+SRC_DIR			:=	src
+BUILD_DIR		:=	.build
+EXT_DIR			:=	extern_libraries
+
+# Libftx
+LIBFTX_A		:=	libftx.a
+LIBFTX_DIR		:=	$(EXT_DIR)/libftx
+LIBFTX			:=	$(LIBFTX_DIR)/$(LIBFTX_A)
+LIBFTX_INC		:=	$(LIBFTX_DIR)/$(INC_DIR)
+LIBFTX_SENTINEL	:=	$(LIBFTX_DIR)/.git
+
+# MLX42
+MLX42_DIR		:=	$(EXT_DIR)/MLX42
+MLX42_SENTINEL	:=	$(MLX42_DIR)/.git
+MLXLIB			:=	$(MLX42_DIR)/build/libmlx42.a
+MLX42_INC		:=	-I$(MLX42_DIR)/include
 
 MAIN			:=	main.c
 PARSE			:=	parse/parsing.c				parse/parse_utils.c												\
@@ -83,114 +122,81 @@ THREADING		:=	handling/thread_setup.c		handling/thread_terminate.c										\
 MLX				:=	setup/window_setup.c		setup/window_setup2.c											\
 					hooks/hooks.c				hooks/loop_hooks.c				hooks/mouse_hook.c				\
 					hooks/loop_move_hooks.c																		\
-					transform/cam/camera_move.c	transform/cam/camera_rotate.c									\
-					transform/obj/obj_move.c	transform/obj/obj_rotate.c		transform/obj/obj_modification.c\
-					transform/resolution/scaling_resolution.c													\
+					transform/cam/camera_move.c	transform/cam/camera_rotate.c	transform/obj/obj_modification.c\
+					transform/obj/obj_move.c	transform/obj/obj_rotate.c		transform/resolution/scaling.c	\
 					print/print_objs.c			print/print_primitives.c		print/print_perf_stats.c
 SCENE			:=	set_filename.c				create_rt_file.c				scene_elements.c				\
 					geometric_primitives.c
-RENDER			:=	rendering/render.c			rendering/trace_ray.c											\
-					rendering/set_pixel.c		rendering/upscale_manager.c 									\
+RENDER			:=	rendering/render.c			rendering/trace_ray.c			rendering/surface_normals.c		\
+					rendering/set_pixel.c		rendering/upscale_manager.c										\
 					intersect/obj_intersect.c	intersect/cylinder.c			intersect/cylinder_parts.c		\
-					intersect/lighting.c
+					intersect/lighting.c		intersect/soft_shadow.c
 MATH_VEC		:=	vec/vec_arithmetic.c		vec/vec_geometry.c				vec/vec_transform.c				\
 					math/clamp.c
 SETUP_CLEAN		:=	init.c						cleanup.c
 ERROR			:=	error.c						print.c
 
-#		Find all .c files in the specified directories
-SRCP			:=	$(addprefix $(SRC_DIR), $(MAIN))															\
-					$(addprefix $(SRC_DIR)parsing/, $(PARSE))													\
-					$(addprefix $(SRC_DIR)threads/, $(THREADING))												\
-					$(addprefix $(SRC_DIR)mlx/, $(MLX))															\
-					$(addprefix $(SRC_DIR)create_scene_file/, $(SCENE))											\
-					$(addprefix $(SRC_DIR)render/, $(RENDER))													\
-					$(addprefix $(SRC_DIR)math_vector/, $(MATH_VEC))											\
-					$(addprefix $(SRC_DIR)setup_cleanup/, $(SETUP_CLEAN))										\
-					$(addprefix $(SRC_DIR)error/, $(ERROR))
+SRCS			:=	$(addprefix $(SRC_DIR)/, $(MAIN))						\
+					$(addprefix $(SRC_DIR)/parsing/, $(PARSE))				\
+					$(addprefix $(SRC_DIR)/threads/, $(THREADING))			\
+					$(addprefix $(SRC_DIR)/mlx/, $(MLX))					\
+					$(addprefix $(SRC_DIR)/create_scene_file/, $(SCENE))	\
+					$(addprefix $(SRC_DIR)/render/, $(RENDER))				\
+					$(addprefix $(SRC_DIR)/math_vector/, $(MATH_VEC))		\
+					$(addprefix $(SRC_DIR)/setup_cleanup/, $(SETUP_CLEAN))	\
+					$(addprefix $(SRC_DIR)/error/, $(ERROR))
 
-#		Generate object file names
-OBJS 			:=	$(SRCP:%.c=$(BUILD_DIR)%.o)
-#		Generate Dependency files
+OBJS			:=	$(SRCS:%.c=$(BUILD_DIR)/%.o)
 DEPS			:=	$(OBJS:.o=.d)
 
-#		HEADERS
-INCS			:=	miniRT.h			parsing.h			threadsRT.h			scene.h				RTmlx.h		\
-					render.h			setup_clean.h		mathRT.h			RTerror.h
-INCP			:=	$(addprefix $(INCD), $(INCS))
-HEADERS			:=	$(INCP)
-INCLUDE_RT		:=	-I $(INCD)
+INCLUDES		:=	-I$(INC_DIR) -I$(LIBFTX_INC) $(MLX42_INC)
 
-#		LIBFT
-LIBFT_D			:=	$(EXTERN_LIBS)libft/
-LIBFT_N			:=	libft.a
+DELETE			:=	*.out			**/*.out		.DS_Store	\
+					**/.DS_Store	.dSYM/			**/.dSYM/
 
-LIBFT_I			:=	$(addprefix $(LIBFT_D), $(INCD))
-LIBFT_L			:=	$(addprefix $(LIBFT_D), $(LIBFT_N))
+all: $(NAME)
 
-INCLUDE			 =	-I $(LIBFT_I)
-LIBS			 =	$(LIBFT_L)
-
-#		MLX42
-MLX42_D			:=	$(EXTERN_LIBS)MLX42/
-MLX42_N			:=	libmlx42.a
-MLX42_I			:=	$(addprefix $(MLX42_D), $(INCD))
-MLX42_L			:=	$(addprefix $(MLX42_D)build/, $(MLX42_N))
-
-INCLUDE			+=	-I $(MLX42_I)
-LIBS			+=	$(MLX42_L)
-
-LINKER_FLAGS	 =	-lglfw -lm
-
-BUILD			:=	$(COMPILER) $(INCLUDE) $(CFLAGS)
-
-#		Remove these created files
-DELETE			:=	*.out			**/*.out			.DS_Store												\
-					**/.DS_Store	.dSYM/				**/.dSYM/
-
-#		RECIPES
-all:	$(NAME)
-
-$(NAME): $(LIBS) $(OBJS)
-	$(BUILD) $(OBJS) $(LIBS) $(LINKER_FLAGS) -o $(NAME)
+$(NAME): $(OBJS) $(MLXLIB) $(LIBFTX)
+	@$(COMPILER) $(CFLAGS) $(OBJS) $(MLXLIB) $(LIBFTX) $(MLX_LINK) -o $(NAME)
 	@printf "$(CREATED)" $@ $(CUR_DIR)
 
-# $(BUILD_DIR)%.o: %.c $(HEADERS)
-# 	@mkdir -p $(@D)
-# 	$(BUILD) $(INCLUDE_RT) -c $< -o $@
-
-$(BUILD_DIR)%.o: %.c
+$(BUILD_DIR)/%.o: %.c | $(LIBFTX) $(MLXLIB)
 	@mkdir -p $(@D)
-	$(BUILD) $(INCLUDE_RT) -c $< -o $@
+	$(COMPILER) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
-$(LIBFT_L):
-	@$(MAKE) $(MULTI_THREADED) $(PRINT_NO_DIR) -C $(LIBFT_D)
+$(MLX42_SENTINEL):
+	git submodule update --init $(MLX42_DIR)
 
-$(MLX42_L):
-	@cmake $(MLX42_D) -B $(MLX42_D)/build && cmake --build $(MLX42_D)/build --parallel $(N_JOBS)
+$(MLXLIB): | $(MLX42_SENTINEL)
+	cmake -B $(MLX42_DIR)/build $(MLX42_DIR)
+	cmake --build $(MLX42_DIR)/build --parallel
+	@printf "$(CREATED)" libmlx42.a $(CUR_DIR)
 
-cln:
-	@$(RM) $(BUILD_DIR) $(DELETE)
-	@printf "$(REMOVED)" $(BUILD_DIR) $(CUR_DIR)$(BUILD_DIR)
+$(LIBFTX_SENTINEL): | $(MLX42_SENTINEL)
+	git submodule update --init $(LIBFTX_DIR)
+	git -C $(LIBFTX_DIR) checkout $(shell git config -f .gitmodules submodule.$(LIBFTX_DIR).branch || echo main)
+	git -C $(LIBFTX_DIR) submodule update --remote --merge
+	git -C $(LIBFTX_DIR) submodule update --init src/get_next_line src/dbltoa src/dynarr
+	git -C $(LIBFTX_DIR)/src/get_next_line checkout $$(git config -f $(abspath $(LIBFTX_DIR))/.gitmodules submodule.src/get_next_line.branch || echo main)
+	git -C $(LIBFTX_DIR)/src/dbltoa checkout $$(git config -f $(abspath $(LIBFTX_DIR))/.gitmodules submodule.src/dbltoa.branch || echo main)
+	git -C $(LIBFTX_DIR)/src/dynarr checkout $$(git config -f $(abspath $(LIBFTX_DIR))/.gitmodules submodule.src/dynarr.branch || echo main)
+
+$(LIBFTX): | $(LIBFTX_SENTINEL)
+	@$(MAKE) $(PRINT_NO_DIR) -C $(LIBFTX_DIR) SUBMODULES_CMD= COMPILER=$(COMPILER) all gnl dbltoa dynarr $(firstword $(filter debug valgrind,$(MAKECMDGOALS)) all)
 
 clean:
-	$(MAKE) $(PRINT_NO_DIR) -C $(LIBFT_DIR) clean
-	@$(RM) $(MLX42_PATH)/build
 	@$(RM) $(BUILD_DIR) $(DELETE)
-	@printf "$(REMOVED)" $(BUILD_DIR) $(CUR_DIR)$(BUILD_DIR)
+	@printf "$(REMOVED)" $(BUILD_DIR)/ $(CUR_DIR)$(BUILD_DIR)/
 
-fclean:	clean
-	@$(MAKE) $(PRINT_NO_DIR) -C $(LIBFT_DIR) no_print_fclean
-	@$(RM) $(NAME)
-	@printf "$(REMOVED)" $(NAME) $(CUR_DIR)
-
-fcln:	cln
+fclean: clean
+	@[ ! -e "$(LIBFTX_SENTINEL)" ] || $(MAKE) $(PRINT_NO_DIR) -C $(LIBFTX_DIR) fclean
+	@[ ! -e "$(MLX42_SENTINEL)" ] || $(RM) "$(MLX42_DIR)/build"
 	@$(RM) $(NAME)
 	@printf "$(REMOVED)" $(NAME) $(CUR_DIR)
 
 re:
-	$(MAKE) $(PRINT_NO_DIR) fclean
-	$(MAKE) $(PRINT_NO_DIR) all
+	@$(MAKE) $(PRINT_NO_DIR) fclean
+	@$(MAKE) $(PRINT_NO_DIR) all
 
 test: all
 	./$(NAME) ./scenes/test.rt
@@ -202,38 +208,42 @@ sunshine: all
 	./$(NAME) ./scenes/sunshine.rt
 
 white: all
-	./$(NAME) ./scenes/white.rt
+	./$(NAME) ./scenes/white_spheres.rt
 
-valgrind: all
-	./$(NAME) ./scenes/test.rt
+debug: $(if $(filter-out debug,$(MAKECMDGOALS)),,all)
+
+valgrind: $(if $(filter-out valgrind,$(MAKECMDGOALS)),,all)
 
 print-%:
 	$(info $($*))
 
-#		Include the dependency files
 -include $(DEPS)
 
-.PHONY: all clean fclean fcln re cln double_thread pillars sunshine white valgrind
+.PHONY:	all clean fclean re			\
+		test pillars sunshine white	\
+		debug valgrind print-%
 
 # ----------------------------------- colors --------------------------------- #
-BOLD		= \033[1m
-DIM			= \033[2m
-ITALIC		= \033[3m
-UNDERLINE	= \033[4m
-BLACK		= \033[30m
-RED			= \033[31m
-GREEN		= \033[32m
-YELLOW		= \033[33m
-BLUE		= \033[34m
-MAGENTA		= \033[35m
-CYAN		= \033[36m
-WHITE		= \033[37m
-RESET		= \033[0m
 
-R_MARK_UP	= $(MAGENTA)$(BOLD)
-CA_MARK_UP	= $(GREEN)$(BOLD)
+BOLD			:=	\033[1m
+DIM				:=	\033[2m
+ITALIC			:=	\033[3m
+UNDERLINE		:=	\033[4m
+BLACK			:=	\033[30m
+RED				:=	\033[31m
+GREEN			:=	\033[32m
+YELLOW			:=	\033[33m
+BLUE			:=	\033[34m
+MAGENTA			:=	\033[35m
+CYAN			:=	\033[36m
+WHITE			:=	\033[37m
+RESET			:=	\033[0m
+
+R_MARK_UP		:=	$(MAGENTA)$(BOLD)
+CA_MARK_UP		:=	$(GREEN)$(BOLD)
 
 # ----------------------------------- messages ------------------------------- #
-CUR_DIR := $(dir $(abspath $(firstword $(MAKEFILE_LIST))))
-REMOVED := $(R_MARK_UP)REMOVED $(CYAN)%s$(MAGENTA) (%s) $(RESET)\n
-CREATED := $(CA_MARK_UP)CREATED $(CYAN)%s$(GREEN) (%s) $(RESET)\n
+
+CUR_DIR			:=	$(dir $(abspath $(firstword $(MAKEFILE_LIST))))
+REMOVED			:=	$(R_MARK_UP)REMOVED $(CYAN)%s$(MAGENTA) (%s) $(RESET)\n
+CREATED			:=	$(CA_MARK_UP)CREATED $(CYAN)%s$(GREEN) (%s) $(RESET)\n

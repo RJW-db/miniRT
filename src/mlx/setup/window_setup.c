@@ -1,4 +1,4 @@
-#include <RTmlx.h>
+#include "RTmlx.h"
 
 //	Static Functions
 static bool	init_mlx(t_window *win);
@@ -8,13 +8,12 @@ static void	center_window(t_window *win);
 
 bool	windows_setup_mlx(t_rt *rt)
 {
-	if (init_mlx(rt->win) == false || \
-		windows_logo(rt->win) == false)
+	if (init_mlx(rt->win) == false || windows_logo(rt->win) == false)
 		return (EXIT_FAILURE);
 	res_setscale(rt->win, rt->win->res_r_start);
 	if (THREADS > 1)
 	{
-		if (img_multithreaded(rt) == false)
+		if (img_multithreaded(rt, rt->win->mlx, &rt->thread) == false)
 			return (EXIT_FAILURE);
 	}
 	else
@@ -29,17 +28,18 @@ bool	windows_setup_mlx(t_rt *rt)
 
 static bool	init_mlx(t_window *win)
 {
-	uint32_t	win_width;
-	uint32_t	win_height;
+	const char	*mlx_title = "miniRT is setting up MLX";
+	int32_t		win_width;
+	int32_t		win_height;
 
 	win_width = SCREEN_WIDTH / 2;
 	win_height = SCREEN_HEIGHT / 2;
 	win->aspectrat = (float)win_width / (float)win_height;
-	win->mlx = mlx_init(win_width, win_height, "miniRT is setting up MLX", false);
+	win->mlx = mlx_init(win_width, win_height, mlx_title, false);
 	if (win->mlx == NULL)
 		return (false);
-	win->window_hght = win_height;
-	win->window_wdth = win_width;
+	win->window_hght = (uint16_t)win_height;
+	win->window_wdth = (uint16_t)win_width;
 	return (true);
 }
 
@@ -48,7 +48,7 @@ static bool	img_to_window(t_window *win)
 	win->img = mlx_new_image(win->mlx, win->window_wdth, win->window_hght);
 	if (win->img == NULL)
 		return (false);
-	win->id = mlx_image_to_window(win->mlx, win->img, 0, 0);
+	win->id = (int16_t)mlx_image_to_window(win->mlx, win->img, 0, 0);
 	if (win->id == -1)
 		return (mlx_delete_image(win->mlx, win->img), false);
 	win->pixels = win->img->pixels;
@@ -73,7 +73,7 @@ static void	center_window(t_window *win)
 	int32_t	height;
 
 	mlx_get_monitor_size(0, &width, &height);
-	width = (width - win->window_wdth) / 2;
-	height = (height - win->window_hght) / 2;
+	width = (width - (int32_t)win->window_wdth) / 2;
+	height = (height - (int32_t)win->window_hght) / 2;
 	mlx_set_window_pos(win->mlx, width, height);
 }

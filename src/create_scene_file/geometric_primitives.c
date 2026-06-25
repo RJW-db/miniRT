@@ -1,4 +1,4 @@
-#include <scene.h>
+#include "scene.h"
 
 //	Static Functions
 static void	plane_line(t_objs *pl, t_dbltoa *dbl, int fd);
@@ -24,47 +24,47 @@ void	objs_line(t_objs *objs, size_t amount, t_dbltoa *dbl, int fd)
 
 static void	plane_line(t_objs *pl, t_dbltoa *dbl, int fd)
 {
-	char	rt_line[RT_MAX_LINE_LEN];
-	size_t	line_index;
+	char	buf[RT_MAX_LINE_LEN];
+	size_t	line_idx;
 
-	line_index = cpy_str(rt_line, "pl\t");
-	line_index += coords_line(dbl, rt_line + line_index, pl->coords);
-	line_index += coords_line(dbl, rt_line + line_index, pl->plane.orientation);
-	line_index += color_line(dbl, rt_line + line_index, pl->color);
-	ft_putendl_fd(rt_line, fd);
+	line_idx = cpy_str0(buf, "pl\t");
+	line_idx += coords_line(dbl, buf + line_idx, pl->coords);
+	line_idx += coords_line(dbl, buf + line_idx, pl->u.plane.orientation);
+	line_idx += color_line(dbl, buf + line_idx, pl->color);
+	ft_putendl_fd(buf, fd);
 }
 
 static void	sphere_line(t_objs *sp, t_dbltoa *dbl, int fd)
 {
-	char	rt_line[RT_MAX_LINE_LEN];
-	size_t	line_index;
+	char	buf[RT_MAX_LINE_LEN];
+	size_t	line_idx;
 
-	line_index = cpy_str(rt_line, "sp\t");
-	line_index += coords_line(dbl, rt_line + line_index, sp->coords);
-	dbl->value = sp->sphere.radius * 2;
+	line_idx = cpy_str0(buf, "sp\t");
+	line_idx += coords_line(dbl, buf + line_idx, sp->coords);
+	dbl->value = sp->u.sphere.radius * 2;
 	dbltoa_buff_prec(*dbl);
-	line_index += cpy_str(rt_line + line_index, dbl->buff);
-	line_index += cpy_str(rt_line + line_index, "\t\t");
-	line_index += color_line(dbl, rt_line + line_index, sp->color);
-	ft_putendl_fd(rt_line, fd);
+	line_idx += cpy_str0(buf + line_idx, dbl->buff);
+	line_idx += cpy_str0(buf + line_idx, "\t\t");
+	line_idx += color_line(dbl, buf + line_idx, sp->color);
+	ft_putendl_fd(buf, fd);
 }
 
 static void	cylinder_line(t_objs *cy, t_dbltoa *dbl, int fd)
 {
-	char	rt_line[RT_MAX_LINE_LEN];
-	size_t	line_index;
+	char	buf[RT_MAX_LINE_LEN];
+	size_t	line_idx;
 
-	line_index = cpy_str(rt_line, "cy\t");
-	line_index += coords_line(dbl, rt_line + line_index, cy->coords);
-	line_index += coords_line(dbl, rt_line + line_index, cy->cylinder.orientation);
-	dbl->value = cy->cylinder.radius * 2;
+	line_idx = cpy_str0(buf, "cy\t");
+	line_idx += coords_line(dbl, buf + line_idx, cy->coords);
+	line_idx += coords_line(dbl, buf + line_idx, cy->u.cylinder.orientation);
+	dbl->value = cy->u.cylinder.radius * 2;
 	dbltoa_buff_prec(*dbl);
-	line_index += cpy_str(rt_line + line_index, dbl->buff);
-	line_index += cpy_str(rt_line + line_index, "\t\t");
-	dbl->value = cy->cylinder.height;
+	line_idx += cpy_str0(buf + line_idx, dbl->buff);
+	line_idx += cpy_str0(buf + line_idx, "\t\t");
+	dbl->value = cy->u.cylinder.height;
 	dbltoa_buff_prec(*dbl);
-	line_index += cpy_str(rt_line + line_index, dbl->buff);
-	line_index += cpy_str(rt_line + line_index, "\t\t");
-	line_index += color_line(dbl, rt_line + line_index, cy->color);
-	ft_putendl_fd(rt_line, fd);
+	line_idx += cpy_str0(buf + line_idx, dbl->buff);
+	line_idx += cpy_str0(buf + line_idx, "\t\t");
+	line_idx += color_line(dbl, buf + line_idx, cy->color);
+	ft_putendl_fd(buf, fd);
 }

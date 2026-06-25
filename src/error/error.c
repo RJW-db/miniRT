@@ -1,4 +1,6 @@
-#include <RTerror.h>
+#include <stddef.h>
+#include <stdbool.h>
+#include "RTerror.h"
 
 /**
  * @brief overwrites static *(address) to errnum.
@@ -13,7 +15,7 @@
  * @note Use ERTRN (-1) to return last errnum without overwriting.
  * @note Use ESET (-2) to set the shared_errnum address in the next call.
  */
-int32_t	errset(const int64_t errnum)
+int16_t	errset(const int64_t errnum)
 {
 	static int64_t	*shared_errnum = NULL;
 	static bool		set_address = true;
@@ -24,7 +26,7 @@ int32_t	errset(const int64_t errnum)
 		{
 			shared_errnum = (int64_t *)errnum;
 			set_address = false;
-			return (errnum);
+			return ((int16_t)errnum);
 		}
 		return (ESET);
 	}
@@ -32,9 +34,12 @@ int32_t	errset(const int64_t errnum)
 	{
 		if (*shared_errnum != ENOMEM && errnum != ERTRN)
 			*shared_errnum = errnum;
-		return (*shared_errnum);
+		return ((int16_t)(*shared_errnum));
 	}
 	else if (errnum == ESET)
-		return (set_address = true, ESET);
+	{
+		set_address = true;
+		return (ESET);
+	}
 	return (ERRNSET);
 }

@@ -1,13 +1,11 @@
 #ifndef RENDER_H
 # define RENDER_H
-# include <common_defs.h>
-# include <scene.h>
 
+# include "scene.h"
 # define RES_STEP_SIZE 1
 # define RES_RATIO_MAX 12
 # define RES_R_LOW 10
 # define RES_R_FULL 1
-
 # define SHADOW_EPSILON 1e-3F
 
 typedef enum e_intersect_types
@@ -44,38 +42,57 @@ typedef struct s_cyl_capintersect
 	float	cap_radius;
 }	t_cyl_cap;
 
-// set_pixels.c
+typedef struct s_hit
+{
+	t_objs		*obj;
+	t_vec4		point;
+	t_vec4		normal;
+	t_vec4		color;
+	float		t;
+	uint8_t		type;
+}	t_hit;
 
-// void		set_pixel(t_window *win, uint16_t x, uint16_t y, t_vec4 color);
+typedef struct s_light_ctx
+{
+	t_scene		*sc;
+	t_hit		*hit;
+	uint32_t	light_i;
+	t_vec4		light_dir;
+	float		distance;
+	float		shadow;
+	float		diff;
+}	t_light_ctx;
+
 void		scaled_res_set_pixel(t_window *w, uint16_t x, uint16_t y, t_vec4 color);
 void		set_pixel_multi(t_thread *th, uint16_t res_ratio, t_axis2 inp, t_vec4 color);
 
 // lighting.c
+t_vec4		calc_lighting(t_scene *sc, t_hit *hit);
+t_objs		*render_light(t_scene *scene, t_ray ray, float *hit_t, t_objs *closest_obj);
 
-t_vec4		calc_lighting(t_scene *sc, t_vec4 point, t_vec4 normal, t_vec4 obj_color);
-t_objs		*render_light(t_scene *scene, t_ray ray, float *closest_t, t_objs *closest_obj);
+// soft_shadow.c
+float		calc_soft_shadow_circle(t_light_ctx *lx, uint8_t sample_count);
 
 // obj_intersect.c
-
 uint8_t		ray_intersect_plane(t_ray ray, t_objs *obj, float *t);
 uint8_t		ray_intersect_sphere(t_ray ray, t_objs *obj, float *t);
 uint8_t		ray_intersect_light(t_ray ray, t_objs *obj, float *t);
 
 // cylinder.c
-
 uint8_t		ray_intersect_cylinder(t_ray ray, t_objs *obj, float *t);
 uint8_t		check_body_intersection(t_ray ray, t_objs *obj, t_cyl *cy);
 uint8_t		check_cyl_caps(t_cyl *cy, t_ray ray, t_objs *obj, uint8_t hit_type);
 
 // trace_ray.c
-
 t_vec4		trace_ray(t_scene *scene, t_ray ray);
 t_vec4		transform_ray_dir(t_vec4 ndc_dir, t_vec4 cam_orient);
 uint8_t		ray_intersect_table(t_ray ray, t_objs *obj, float *t);
-uint32_t	find_closest_object(t_scene *scene, t_ray ray, float *closest_t, uint8_t *closest_intersect_type);
+uint32_t	find_closest_object(t_scene *scene, t_ray ray, float *hit_t, uint8_t *hit_type);
+
+// surface_normals.c
+t_vec4		calculate_normal(t_objs *obj, t_ray *ray, float t, uint8_t intersect_type);
 
 // render_upscale.c
-
 void		upscale_manager(t_rt *rt);
 void		upscale_manager_thread(t_rt *rt);
 void		set_starting_res_ratio(t_rt *rt, double delta_time);

@@ -1,5 +1,5 @@
-#include <parsing.h>
-#include <mathRT.h>
+#include "parsing.h"
+#include "mathRT.h"
 
 /**
  * @brief Skips till it encounters a new numerical value.
@@ -11,10 +11,9 @@
  */
 char	*nxtv(char *str)
 {
-	while (*str != '\0' && ft_isspace(*str) == false && *str != ',')
+	while (*str && ft_isspace(*str) == false && *str != ',')
 		++str;
-	while (*str != '\0' && *str != '.' && *str != '-' && \
-	ft_isdigit(*str) == false)
+	while (*str && *str != '.' && *str != '-' && !ft_isdigit(*str))
 		++str;
 	return (str);
 }
@@ -33,9 +32,9 @@ char	*nxtvp(char **str)
 	char	*c;
 
 	c = *str;
-	while (*c != '\0' && ft_isspace(*c) == false && *c != ',')
+	while (*c && ft_isspace(*c) == false && *c != ',')
 		++c;
-	while (*c != '\0' && *c != '.' && *c != '-' && ft_isdigit(*c) == false)
+	while (*c && *c != '.' && *c != '-' && !ft_isdigit(*c))
 		++c;
 	*str = c;
 	return (c);
@@ -58,12 +57,12 @@ float	rt_atof(const char *str)
 	while (str[i] != '\0' && ft_isdigit(str[i]) == true)
 		num = (num * 10.0F) + (str[i++] - '0');
 	if (str[i] != '.')
-		return (num * sign);
+		return (num * (float)sign);
 	++i;
 	place = 1;
 	while (str[i] != '\0' && ft_isdigit(str[i]) == true)
-		num += (float)(str[i++] - '0') / pow(10, (float)(place++));
-	return (num * sign);
+		num += (float)(str[i++] - '0') / (float)pow(10.0, (double)(place++));
+	return (num * (float)sign);
 }
 
 bool	validate_orientation(t_vec4 *or, char **line)
