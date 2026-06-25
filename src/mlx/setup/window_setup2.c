@@ -10,25 +10,22 @@ bool	res_setscale(t_window *win, const float scale)
 	return (true);
 }
 
-bool	img_multithreaded(t_rt *rt)
+bool	img_multithreaded(t_rt *rt, mlx_t *mlx, t_thread *thread)
 {
 	const uint16_t	width = (uint16_t)rt->win->window_wdth;
 	const uint16_t	height = (uint16_t)rt->win->window_hght;
+	const size_t	img_size = (size_t)width * (size_t)height * 4U;
 
-	rt->thread.img = mlx_new_image(rt->win->mlx, width, height);
-	if (rt->thread.img == NULL)
-	{
+	thread->img = mlx_new_image(mlx, width, height);
+	if (thread->img == NULL)
 		return (false);
-	}
-	rt->win->id = (int16_t)mlx_image_to_window(rt->win->mlx, rt->thread.img, 0, 0);
+	rt->win->id = (int16_t)mlx_image_to_window(mlx, thread->img, 0, 0);
 	if (rt->win->id == -1)
-	{
-		return (mlx_delete_image(rt->win->mlx, rt->thread.img), false);
-	}
-	rt->thread.pixels_mlx = (uint8_t *)rt->thread.img->pixels;
-	rt->thread.pixels_own = (uint8_t *)malloc(sizeof(uint8_t) * (size_t)width * (size_t)height * 4U);
-	if (rt->thread.pixels_own == NULL)
-		return (mlx_delete_image(rt->win->mlx, rt->thread.img), false);
-	rt->thread.pixels = rt->thread.pixels_own;
+		return (mlx_delete_image(mlx, thread->img), false);
+	thread->pixels_mlx = (uint8_t *)thread->img->pixels;
+	thread->pixels_own = (uint8_t *)malloc(sizeof(uint8_t) * img_size);
+	if (thread->pixels_own == NULL)
+		return (mlx_delete_image(mlx, thread->img), false);
+	thread->pixels = thread->pixels_own;
 	return (true);
 }

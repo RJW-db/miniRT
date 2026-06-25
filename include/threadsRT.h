@@ -23,7 +23,7 @@ enum e_mtx
 	MTX_AMOUNT
 };
 
-typedef struct	s_thread
+typedef struct s_thread
 {
 	t_rt			*rt;
 	t_scene			*scene;
@@ -35,7 +35,6 @@ typedef struct	s_thread
 	pthread_t		thread;
 }	t_thread;
 
-
 bool	res_setscale(t_window *win, const float scale);
 void	print_performance_stats(t_rt *rt, float fps);
 
@@ -46,7 +45,7 @@ void	destroy_threads(t_rt *rt);
 bool	destroy_conditions(t_rt *rt);
 void	destroy_mutexes(t_rt *rt, size_t amount);
 
-bool	img_multithreaded(t_rt *rt);
+bool	img_multithreaded(t_rt *rt, mlx_t *mlx, t_thread *thread);
 void	*thread_routine_init(t_thread *th);
 
 bool	check_bool(t_mtx *mutex, bool to_check);

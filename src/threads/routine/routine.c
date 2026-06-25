@@ -33,8 +33,8 @@ static void	render_routine(t_thread *th)
 		else if (thread_render(th, th->rt->win) == false)
 		{
 			time = mlx_get_time() - time;
-			if (th->win->res_ratio == th->win->res_r_start - 1 \
-				&& check_bool(th->rt->mtx + MTX_SWITCH_BOOL, th->rt->win->auto_res))
+			if (th->win->res_ratio == th->win->res_r_start - 1 &&
+				check_bool(th->rt->mtx + MTX_SWITCH_BOOL, th->rt->win->auto_res))
 				set_starting_res_ratio(th->rt, time);
 		}
 		print_performance_stats(th->rt, (float)(1.0 / time));

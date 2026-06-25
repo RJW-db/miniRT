@@ -24,44 +24,44 @@ void	create_scene_rt_file(t_scene *sc, const char *filename)
 	close(fd);
 }
 
-size_t	color_line(t_dbltoa *dbl, char *rt_line, t_vec4 color)
+size_t	color_line(t_dbltoa *dbl, char *buf, t_vec4 color)
 {
-	size_t	line_index;
+	size_t	line_idx;
 
 	dbl->value = color[R] * 255;
 	dbl->precision = 0;
 	dbltoa_buff_prec(*dbl);
-	line_index = cpy_str0(rt_line, dbl->buff);
-	rt_line[line_index++] = ',';
+	line_idx = cpy_str0(buf, dbl->buff);
+	buf[line_idx++] = ',';
 	dbl->value = color[G] * 255;
 	dbltoa_buff_prec(*dbl);
-	line_index += cpy_str0(rt_line + line_index, dbl->buff);
-	rt_line[line_index++] = ',';
+	line_idx += cpy_str0(buf + line_idx, dbl->buff);
+	buf[line_idx++] = ',';
 	dbl->value = color[B] * 255;
 	dbltoa_buff_prec(*dbl);
-	line_index += cpy_str0(rt_line + line_index, dbl->buff);
-	return (line_index);
+	line_idx += cpy_str0(buf + line_idx, dbl->buff);
+	return (line_idx);
 }
 
-size_t	coords_line(t_dbltoa *dbl, char *rt_line, t_vec4 coords)
+size_t	coords_line(t_dbltoa *dbl, char *buf, t_vec4 coords)
 {
-	size_t	line_index;
+	size_t	line_idx;
 
 	dbl->value = coords[X];
 	dbl->precision = 3;
 	dbl->trim_trailing_zeros = true;
 	dbltoa_buff_prec(*dbl);
-	line_index = cpy_str0(rt_line, dbl->buff);
-	rt_line[line_index++] = ',';
+	line_idx = cpy_str0(buf, dbl->buff);
+	buf[line_idx++] = ',';
 	dbl->value = coords[Y];
 	dbltoa_buff_prec(*dbl);
-	line_index += cpy_str0(rt_line + line_index, dbl->buff);
-	rt_line[line_index++] = ',';
+	line_idx += cpy_str0(buf + line_idx, dbl->buff);
+	buf[line_idx++] = ',';
 	dbl->value = coords[Z];
 	dbltoa_buff_prec(*dbl);
-	line_index += cpy_str0(rt_line + line_index, dbl->buff);
-	line_index += cpy_str0(rt_line + line_index, "\t\t");
-	return (line_index);
+	line_idx += cpy_str0(buf + line_idx, dbl->buff);
+	line_idx += cpy_str0(buf + line_idx, "\t\t");
+	return (line_idx);
 }
 
 static t_dbltoa	setup_dbltoa_params(char *buff)

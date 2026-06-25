@@ -11,10 +11,9 @@
  */
 char	*nxtv(char *str)
 {
-	while (*str != '\0' && ft_isspace(*str) == false && *str != ',')
+	while (*str && ft_isspace(*str) == false && *str != ',')
 		++str;
-	while (*str != '\0' && *str != '.' && *str != '-' && \
-	ft_isdigit(*str) == false)
+	while (*str && *str != '.' && *str != '-' && !ft_isdigit(*str))
 		++str;
 	return (str);
 }
@@ -33,9 +32,9 @@ char	*nxtvp(char **str)
 	char	*c;
 
 	c = *str;
-	while (*c != '\0' && ft_isspace(*c) == false && *c != ',')
+	while (*c && ft_isspace(*c) == false && *c != ',')
 		++c;
-	while (*c != '\0' && *c != '.' && *c != '-' && ft_isdigit(*c) == false)
+	while (*c && *c != '.' && *c != '-' && !ft_isdigit(*c))
 		++c;
 	*str = c;
 	return (c);

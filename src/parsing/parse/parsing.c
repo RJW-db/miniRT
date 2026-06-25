@@ -20,7 +20,8 @@ int16_t	parse_scene_file(const char *file, t_scene *sc)
 		return (close(fd), errset(perr("init_dynarr", ENOMEM)));
 	if (line_validation(fd, sc, &vc) != 0)
 		return (free_dynarrs_on_failure(&vc), close(fd), errset(ERTRN));
-	if (shrink_dynarr(&vc) == false) {
+	if (shrink_dynarr(&vc) == false)
+	{
 		free_dynarrs_on_failure(&vc);
 		return (close(fd), errset(perr("shrink_dynarr", ENOMEM)));
 	}
@@ -46,7 +47,7 @@ static bool	shrink_dynarr(t_value_check *vc)
 	if (dynarr_shrink_to_fit(&vc->obj_dynarr) == false && errno == ENOMEM)
 		return (false);
 	if (vc->light_dynarr.length < vc->light_dynarr.capacity &&
-	dynarr_shrink_to_fit(&vc->light_dynarr) == false && errno == ENOMEM)
+		dynarr_shrink_to_fit(&vc->light_dynarr) == false && errno == ENOMEM)
 		return (false);
 	return (true);
 }

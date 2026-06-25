@@ -35,7 +35,6 @@ float		rt_atof(const char *str);
 char		*nxtv(char *str);
 char		*nxtvp(char **str);
 
-
 bool		validate_orientation(t_vec4 *or, char **line);
 bool		validate_and_normalize_color(t_vec4 *color, char **line);
 

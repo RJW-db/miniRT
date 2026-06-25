@@ -3,7 +3,7 @@
 #include "RTerror.h"
 #include "setup_clean.h"
 
-int main(int argc, char **argv)
+int	main(int argc, char **argv)
 {
 	t_rt		rt;
 	t_scene		sc;

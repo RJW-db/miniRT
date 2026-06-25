@@ -32,7 +32,7 @@ bool	check_line(char *line, const char prefix, uint8_t nbr_of_groups)
 
 static int	*group_numbers(const char prefix)
 {
-	static int			groups[6][5] = {
+	static int	groups[6][5] = {
 		{1, 3, 0, 0, 0},	// 'A'
 		{3, 3, 1, 0, 0},	// 'C'
 		{3, 1, 3, 1, 3},	// 'L'

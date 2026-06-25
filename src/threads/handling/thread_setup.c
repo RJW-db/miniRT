@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "libftx.h"
-#include "render.h"
 #include "threadsRT.h"
+#include "render.h"
 #include "RTerror.h"
 
 bool	initialize_mutexes(t_rt *rt)
@@ -36,11 +36,16 @@ bool	initialize_conditions(t_rt *rt)
 
 bool	launch_pthreads(t_rt *rt)
 {
+	t_thread	*th;
+	pthread_t	*thread;
+
+	th = &rt->thread;
+	thread = &rt->thread.thread;
 	pthread_mutex_lock(rt->mtx + MTX_SYNC);
-	rt->thread.rt = rt;
-	rt->thread.scene = rt->read_scene;
-	rt->thread.win = rt->win;
-	if (pthread_create(&rt->thread.thread, NULL, (t_cast)thread_routine_init, &rt->thread) != 0)
+	th->rt = rt;
+	th->scene = rt->read_scene;
+	th->win = rt->win;
+	if (pthread_create(thread, NULL, (t_cast)thread_routine_init, th) != 0)
 	{
 		pthread_mutex_lock(rt->mtx + MTX_PRINT);
 		errset(perr("launh_pthreads", (int16_t)errno));

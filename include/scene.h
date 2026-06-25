@@ -60,18 +60,18 @@ typedef enum e_obj_types
 	AMBIENT
 }	t_obj_type;
 
-typedef struct	s_plane
+typedef struct s_plane
 {
 	t_vec4	orientation;
 }	t_plane;
 
-typedef struct	s_sphere
+typedef struct s_sphere
 {
 	float	radius;
 	float	diameter;
 }	t_sphere;
 
-typedef struct	s_cylinder
+typedef struct s_cylinder
 {
 	t_vec4	orientation;
 	float	radius;
@@ -79,7 +79,7 @@ typedef struct	s_cylinder
 	float	height;
 }	t_cylinder;
 
-typedef struct	s_camera
+typedef struct s_camera
 {
 	t_vec4	orientation;
 	float	fov;
@@ -89,7 +89,7 @@ typedef struct	s_camera
 	float	cam_fov_speed;
 }	t_camera;
 
-typedef struct	s_objs
+typedef struct s_objs
 {
 	t_obj_type		type;
 	union u_union
@@ -129,8 +129,8 @@ struct	s_scene
 };
 
 void	create_scene_rt_file(t_scene *sc, const char *filename);
-size_t	color_line(t_dbltoa *dbl, char *rt_line, t_vec4 color);
-size_t	coords_line(t_dbltoa *dbl, char *rt_line, t_vec4 coords);
+size_t	color_line(t_dbltoa *dbl, char *buf, t_vec4 color);
+size_t	coords_line(t_dbltoa *dbl, char *buf, t_vec4 coords);
 
 void	ambient_line(t_objs *ambient, t_dbltoa *dbl, int fd);
 void	camera_line(t_objs *camera, t_dbltoa *dbl, int fd);

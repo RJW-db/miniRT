@@ -23,16 +23,18 @@ static bool	parse_amb(t_objs *ambient, t_value_check *vc, char *line)
 	ambient->type = AMBIENT;
 	ambient->u.a.ratio = rt_atof(line);
 	if ((ambient->u.a.ratio < 0.0F || ambient->u.a.ratio > 1.0F) ||
-	validate_and_normalize_color(&ambient->color, &line) == false)
+		validate_and_normalize_color(&ambient->color, &line) == false)
+	{
 		return (errset(perr("parse_amb", ERRFORM)), EXIT_FAILURE);
+	}
 	++vc->amb_amount;
 	return (EXIT_SUCCESS);
 }
 
-
 static bool	parse_cam(t_objs *camera, t_value_check *vc, char *line)
 {
 	int32_t	fov;
+	float	fov_radius;
 
 	camera->coords[X] = rt_atof(line);
 	camera->coords[Y] = rt_atof(nxtvp(&line));
@@ -44,7 +46,8 @@ static bool	parse_cam(t_objs *camera, t_value_check *vc, char *line)
 	camera->u.c.fov = (float)fov;
 	if (camera->u.c.fov < 0 || camera->u.c.fov > 180)
 		return (errset(perr("parse_cam", ERRFORM)), EXIT_FAILURE);
-	camera->u.c.zvp_dist = 1.0F / tanf((camera->u.c.fov * (float)M_PI / 180.0F) / 2.0F);
+	fov_radius = camera->u.c.fov * (float)M_PI / 180.0F;
+	camera->u.c.zvp_dist = 1.0F / tanf(fov_radius / 2.0F);
 	++vc->cam_amount;
 	return (EXIT_SUCCESS);
 }
@@ -60,8 +63,10 @@ static bool	parse_light(t_value_check *vc, char *line)
 	l.coords[W] = 1.0F;
 	l.u.l.brightness = rt_atof(nxtvp(&line));
 	if ((l.u.l.brightness < 0.0F || l.u.l.brightness > 1.0F) ||
-	validate_and_normalize_color(&l.color, &line) == false)
+		validate_and_normalize_color(&l.color, &line) == false)
+	{
 		return (errset(perr("parse_light", ERRFORM)), EXIT_FAILURE);
+	}
 	l.u.l.radius = 1.5F;
 	l.u.l.intersect_lights = false;
 	l.u.l.visible = false;
@@ -81,8 +86,11 @@ static bool	parse_light_extra(t_objs *l, char **line)
 	if (ft_isnum(*line) == true)
 	{
 		l->u.l.radius = rt_atof(*line);
-		if (l->u.l.radius < 0 || validate_and_normalize_color(&l->u.l.obj_color, line) == false)
+		if (l->u.l.radius < 0 ||
+			validate_and_normalize_color(&l->u.l.obj_color, line) == false)
+		{
 			return (false);
+		}
 		l->u.l.visible = true;
 	}
 	return (true);

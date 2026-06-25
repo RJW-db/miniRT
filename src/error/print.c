@@ -2,14 +2,16 @@
 #include "libftx.h"
 #include "RTerror.h"
 
+#define CUST_ERR_AMOUNT 4
+
 static void	perr_custom(const int16_t errnum)
 {
 	const int16_t	index = (errnum * -1) - 2;
-	const char		msg[CUST_ERR_AMOUNT][30] = { \
-		"Waiting for errnum address", \
-		"Errnum address not set", \
-		"Wrong format", \
-		"Wrong file extension" \
+	const char		*msg[CUST_ERR_AMOUNT] = {
+		"Waiting for errnum address",
+		"Errnum address not set",
+		"Wrong format",
+		"Wrong file extension"
 	};
 
 	if (index >= 0 && index < CUST_ERR_AMOUNT)

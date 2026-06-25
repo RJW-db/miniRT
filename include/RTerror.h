@@ -1,5 +1,5 @@
-#ifndef ERROR_H
-# define ERROR_H
+#ifndef RTERROR_H
+# define RTERROR_H
 # include <stdint.h>
 # include <errno.h>
 
@@ -11,9 +11,6 @@
 # define EMSG_4A "Unsupported amount of ambient light (A)."
 # define EMSG_4O "Unsupported amount of objects (sp, cy, pl)."
 
-// Custom error code macro's
-# define CUST_ERR_AMOUNT 4
-
 /**
  * @brief Custom error code macros (range <= -2).
  * @param ERTRN A fixed option, which returns the set value.
@@ -23,7 +20,7 @@
  * @param ERRFORM Format error (in file).
  * @param ERRFEXT Wrong file extension.
  */
-enum	custom_error
+enum	e_custom_error
 {
 	ERTRN = -1,
 	ESET = -2,

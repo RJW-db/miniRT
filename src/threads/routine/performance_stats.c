@@ -22,8 +22,8 @@ void	print_performance_stats(t_rt *rt, float fps)
 
 	fps_average += fps;
 	++counter;
-	if (rt->win->res_ratio == rt->win->res_r_start \
-		&& cur_time < last_print_time + 0.3)
+	if (rt->win->res_ratio == rt->win->res_r_start &&
+		cur_time < last_print_time + 0.3)
 		return ;
 	last_print_time = cur_time;
 	if (rt->win->prt_perf_stats == true)
