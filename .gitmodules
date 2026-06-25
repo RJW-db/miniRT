@@ -3,4 +3,4 @@
 	url = git@github.com:codam-coding-college/MLX42.git
 [submodule "extern_libraries/libftx"]
 	path = extern_libraries/libftx
-	url = git@github.com:RJW-db/libftx.git
+	url = https://github.com/RJW-db/libftx
