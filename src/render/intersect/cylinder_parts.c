@@ -8,7 +8,6 @@ inline t_vec4	ray_at(t_ray ray, float t);
 static uint8_t	get_cap_intersection(t_cyl_cap *cycap, t_ray ray, t_vec4 ca, uint8_t cap_type);
 static bool		intersect_cylinder_caps(t_ray ray, t_ray plane, float *t);
 
-// Checks if one of the body intersections is valid (i.e. within the cylinder's finite height).
 uint8_t	check_body_intersection(t_ray ray, t_objs *obj, t_cyl *cy)
 {
 	const t_vec4	hit0 = ray_at(ray, cy->t[0]);
@@ -52,14 +51,8 @@ uint8_t	check_cyl_caps(t_cyl *cy, t_ray ray, t_objs *obj, uint8_t hit_type)
 	return (hit_type);
 }
 
-// Returns the point along the ray at parameter t.
-static inline t_vec4	ray_at(t_ray ray, float t)
-{
-	return (vadd(ray.origin, vscale(ray.vec, t)));
-}
-
 // Checks the intersection with one cylinder cap and updates t_hit if valid.
-static uint8_t	get_cap_intersection(t_cyl_cap *cycap, t_ray ray, t_vec4 ca, uint8_t cap_type)
+static uint8_t get_cap_intersection(t_cyl_cap *cycap, t_ray ray, t_vec4 ca, uint8_t cap_type)
 {
 	float	t_cap;
 	t_vec4	center;
@@ -96,4 +89,10 @@ static bool	intersect_cylinder_caps(t_ray ray, t_ray plane, float *t)
 		return (*t >= 0.0F);
 	}
 	return (false);
+}
+
+// Returns the point along the ray at parameter t.
+static inline t_vec4	ray_at(t_ray ray, float t)
+{
+	return (vadd(ray.origin, vscale(ray.vec, t)));
 }

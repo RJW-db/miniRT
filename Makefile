@@ -127,10 +127,10 @@ MLX				:=	setup/window_setup.c		setup/window_setup2.c											\
 					print/print_objs.c			print/print_primitives.c		print/print_perf_stats.c
 SCENE			:=	set_filename.c				create_rt_file.c				scene_elements.c				\
 					geometric_primitives.c
-RENDER			:=	rendering/render.c			rendering/trace_ray.c											\
+RENDER			:=	rendering/render.c			rendering/trace_ray.c			rendering/surface_normals.c		\
 					rendering/set_pixel.c		rendering/upscale_manager.c										\
 					intersect/obj_intersect.c	intersect/cylinder.c			intersect/cylinder_parts.c		\
-					intersect/lighting.c
+					intersect/lighting.c		intersect/soft_shadow.c
 MATH_VEC		:=	vec/vec_arithmetic.c		vec/vec_geometry.c				vec/vec_transform.c				\
 					math/clamp.c
 SETUP_CLEAN		:=	init.c						cleanup.c
