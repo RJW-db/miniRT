@@ -3,7 +3,7 @@
 #include "mathRT.h"
 
 static bool		calc_hard_shadow(t_light_ctx *lx);
-static void		init_light_ctx(t_light_ctx *lx, t_scene *sc, t_hit *hit, uint32_t light_i);
+static void		init_light_ctx(t_light_ctx *lx, t_scene *sc, t_hit *hit, uint32_t i);
 static float	calc_light_contrib(t_light_ctx *lx);
 
 t_objs	*render_light(t_scene *sc, t_ray ray, float *hit_t, t_objs *closest_obj)
@@ -46,13 +46,13 @@ t_vec4	calc_lighting(t_scene *sc, t_hit *hit)
 	return (vec_clamp(result, 0.0F, 1.0F));
 }
 
-static void	init_light_ctx(t_light_ctx *lx, t_scene *sc, t_hit *hit, uint32_t light_i)
+static void	init_light_ctx(t_light_ctx *lx, t_scene *sc, t_hit *hit, uint32_t i)
 {
 	lx->sc = sc;
 	lx->hit = hit;
-	lx->light_i = light_i;
-	lx->light_dir = vnorm(vsub(sc->l.lights[light_i].coords, hit->point));
-	lx->distance = vlen(vsub(sc->l.lights[light_i].coords, hit->point));
+	lx->light_i = i;
+	lx->light_dir = vnorm(vsub(sc->l.lights[i].coords, hit->point));
+	lx->distance = vlen(vsub(sc->l.lights[i].coords, hit->point));
 }
 
 static float	calc_light_contrib(t_light_ctx *lx)

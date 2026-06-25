@@ -68,8 +68,8 @@ bool	thread_render(t_thread *th, t_window *w)
 	axis.y = 0;
 	while (axis.y < w->rndr_hght)
 	{
-		if (check_bool(th->rt->mtx + MTX_RENDER, th->scene->render) == true \
-		|| check_bool(th->rt->mtx + MTX_QUIT_ROUTINE, th->rt->quit_routine) == true)
+		if (check_bool(th->rt->mtx + MTX_RENDER, th->scene->render) == true ||
+			check_bool(th->rt->mtx + MTX_QUIT_ROUTINE, th->rt->quit_routine) == true)
 			return (true);
 		axis.x = 0;
 		while (axis.x < w->rndr_wdth)

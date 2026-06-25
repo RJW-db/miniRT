@@ -52,7 +52,7 @@ uint8_t	check_cyl_caps(t_cyl *cy, t_ray ray, t_objs *obj, uint8_t hit_type)
 }
 
 // Checks the intersection with one cylinder cap and updates t_hit if valid.
-static uint8_t get_cap_intersection(t_cyl_cap *cycap, t_ray ray, t_vec4 ca, uint8_t cap_type)
+static uint8_t	get_cap_intersection(t_cyl_cap *cycap, t_ray ray, t_vec4 ca, uint8_t cap_type)
 {
 	float	t_cap;
 	t_vec4	center;

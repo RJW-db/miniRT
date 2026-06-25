@@ -18,7 +18,7 @@ void	upscale_manager(t_rt *rt)
 	}
 	else if (win->res_ratio > RES_R_FULL)
 	{
-		win->res_ratio = (uint16_t)(intclamp( \
+		win->res_ratio = (uint16_t)(intclamp(
 			win->res_ratio - RES_STEP_SIZE, RES_R_FULL, win->res_r_start));
 	}
 	else
@@ -47,7 +47,7 @@ void	upscale_manager_thread(t_rt *rt)
 	}
 	else if (win->res_ratio > RES_R_FULL)
 	{
-		win->res_ratio = (uint16_t)(intclamp( \
+		win->res_ratio = (uint16_t)(intclamp(
 			win->res_ratio - RES_STEP_SIZE, RES_R_FULL, win->res_r_start));
 		set_shadow_gridsize(rt, RSTAGE_ONGOING);
 	}
@@ -60,15 +60,15 @@ void	upscale_manager_thread(t_rt *rt)
 	win->rndr_wdth = (uint32_t)win->mlx->width / win->res_ratio;
 }
 
-void    set_starting_res_ratio(t_rt *rt, double delta_time)
+void	set_starting_res_ratio(t_rt *rt, double delta_time)
 {
-    const double    error = delta_time - rt->win->target_time;
-    const double    adjustment_factor = 8.0;
-    const double    adjusted_ratio = 1.0 + (error * adjustment_factor);
-    int             new_ratio;
+	const double	error = delta_time - rt->win->target_time;
+	const double	adjustment_factor = 8.0;
+	const double	adjusted_ratio = 1.0 + (error * adjustment_factor);
+	int				new_ratio;
 
-    new_ratio = (int)(rt->win->res_r_start * adjusted_ratio);
-    rt->win->res_r_start = (uint16_t)intclamp(new_ratio, 2, 30);
+	new_ratio = (int)(rt->win->res_r_start * adjusted_ratio);
+	rt->win->res_r_start = (uint16_t)intclamp(new_ratio, 2, 30);
 }
 
 static void	set_shadow_gridsize(t_rt *rt, uint8_t stage)
@@ -79,7 +79,7 @@ static void	set_shadow_gridsize(t_rt *rt, uint8_t stage)
 	{
 		if (rt->win->res_ratio == 1)
 			rt->read_scene->shadow_grsize = 5;
-		else if (rt->win->res_ratio < rt->win->res_r_start - 2 && 
+		else if (rt->win->res_ratio < rt->win->res_r_start - 2 &&
 				 rt->read_scene->shadow_grsize < 3)
 		{
 			rt->read_scene->shadow_grsize += rt->win->res_ratio % 2;

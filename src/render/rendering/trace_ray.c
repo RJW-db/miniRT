@@ -4,8 +4,9 @@
 #include "mathRT.h"
 
 // Static Functions
-static bool		fill_hit_obj(t_scene *sc, t_ray ray, t_hit *hit);
-static bool		fill_hit_light(t_scene *sc, t_ray ray, t_hit *hit);
+static bool	find_closest_hit(t_scene *sc, t_ray ray, t_hit *hit);
+static bool	fill_hit_obj(t_scene *sc, t_ray ray, t_hit *hit);
+static bool	fill_hit_light(t_scene *sc, t_ray ray, t_hit *hit);
 
 uint8_t	ray_intersect_table(t_ray ray, t_objs *obj, float *t)
 {
@@ -16,6 +17,23 @@ uint8_t	ray_intersect_table(t_ray ray, t_objs *obj, float *t)
 	};
 
 	return (intersect_obj[obj->type](ray, obj, t));
+}
+
+t_vec4	trace_ray(t_scene *sc, t_ray ray)
+{
+	t_hit	hit;
+
+	hit = (t_hit){0};
+	hit.t = INFINITY;
+	if (!find_closest_hit(sc, ray, &hit))
+		return ((t_vec4){0.0F, 0.0F, 0.0F, 1.0F});
+	if (hit.obj->type == LIGHT)
+	{
+		if (hit.obj->u.l.visible == false)
+			return (hit.obj->color);
+		return (hit.obj->u.l.obj_color);
+	}
+	return (calc_lighting(sc, &hit));
 }
 
 uint32_t	find_closest_object(t_scene *sc, t_ray ray, float *hit_t, uint8_t *hit_type)
@@ -43,7 +61,7 @@ uint32_t	find_closest_object(t_scene *sc, t_ray ray, float *hit_t, uint8_t *hit_
 	return (closest_obj);
 }
 
-bool	find_closest_hit(t_scene *sc, t_ray ray, t_hit *hit)
+static bool	find_closest_hit(t_scene *sc, t_ray ray, t_hit *hit)
 {
 	if (!fill_hit_obj(sc, ray, hit))
 		return (fill_hit_light(sc, ray, hit));
@@ -55,23 +73,6 @@ bool	find_closest_hit(t_scene *sc, t_ray ray, t_hit *hit)
 	else
 		hit->color = hit->obj->color;
 	return (true);
-}
-
-t_vec4	trace_ray(t_scene *sc, t_ray ray)
-{
-	t_hit	hit;
-
-	hit = (t_hit){0};
-	hit.t = INFINITY;
-	if (!find_closest_hit(sc, ray, &hit))
-		return ((t_vec4){0.0F, 0.0F, 0.0F, 1.0F});
-	if (hit.obj->type == LIGHT)
-	{
-		if (hit.obj->u.l.visible == false)
-			return (hit.obj->color);
-		return (hit.obj->u.l.obj_color);
-	}
-	return (calc_lighting(sc, &hit));
 }
 
 static bool	fill_hit_obj(t_scene *sc, t_ray ray, t_hit *hit)
