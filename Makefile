@@ -2,17 +2,23 @@ NAME			:=	miniRT
 
 MAKEFLAGS		+=	-j
 COMPILER		:=	cc
+COMPILER_INFO	:=	$(shell $(COMPILER) -v 2>&1)
+
+COMPILER_KIND	:=	unknown
+ifneq ($(findstring clang version,$(COMPILER_INFO)),)
+COMPILER_KIND	:=	clang
+endif
+ifneq ($(findstring gcc version,$(COMPILER_INFO)),)
+COMPILER_KIND	:=	gcc
+endif
 
 BASE_FLAGS		:=	-std=c99 -Wall -Wextra -Werror
 PEDANTIC		:=	-Wpedantic -pedantic-errors -Wundef -Wstrict-prototypes
 WARNINGS		:=	-Wshadow -Wconversion -Wsign-conversion			\
 					-Wformat=2 -Wuninitialized -Wunreachable-code
 
-IS_CLANG		:=	$(shell $(COMPILER) --version | grep -qi clang && echo 1 || echo 0)
-IS_GCC			:=	$(shell $(COMPILER) --version | grep -qi gcc && echo 1 || echo 0)
-
 CAST_WARNINGS	:=	-Wbad-function-cast
-ifeq ($(IS_GCC),1)
+ifeq ($(COMPILER_KIND),gcc)
 CAST_WARNINGS	+=	-Wcast-function-type
 endif
 
@@ -28,11 +34,11 @@ THREADS			:=	$(if $(filter-out 1,$(N_JOBS)),2,1)
 
 OS				:=	$(shell uname -s)
 
-ifeq ($(IS_GCC),1)
+ifeq ($(COMPILER_KIND),gcc)
 OPTIMIZATION	+=	-fsingle-precision-constant -flto=auto -fuse-linker-plugin
 endif
 
-ifeq ($(IS_CLANG),1)
+ifeq ($(COMPILER_KIND),clang)
 FSANITIZE		:=	feq ($(IS_CLANG),1)
 OPTIMIZATION	+=	-flto=thin
 endif
