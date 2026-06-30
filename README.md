@@ -1,6 +1,10 @@
 # miniRT
 
-**miniRT** is a compact 3D ray tracer written in C. It renders simple scenes using the ray tracing protocol, implementing spheres, planes, and cylinders with ambient and diffuse lighting, hard shadows, and object transformations. The project emphasizes mathematical modeling, intersection calculations, vectorized SIMD performance, and memory-safe execution using [**MLX42**](https://github.com/codam-coding-college/MLX42).
+**miniRT** is a compact 3D ray tracer written in C. It renders simple scenes using the ray tracing protocol, implementing spheres, planes, and cylinders with ambient and diffuse lighting, hard shadows, and object transformations. The project emphasizes mathematical modeling, intersection calculations, vectorized SIMD performance, and memory-safe execution.
+
+<p align="center">
+  <img width="800" alt="miniRT" src="https://github.com/user-attachments/assets/68a8f68c-e951-40a0-bb22-907507917dee" />
+</p>
 
 ## Features
 
